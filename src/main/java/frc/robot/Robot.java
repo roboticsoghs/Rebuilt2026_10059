@@ -41,9 +41,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("ROBOT READY", DriverStation.isJoystickConnected(0) && DriverStation.isDSAttached());
     SmartDashboard.putBoolean("FMS CONNECTED", DriverStation.isFMSAttached());
 
-    SmartDashboard.putNumber("Actual VelocityX", m_robotContainer.drivetrain.getState().Speeds.vxMetersPerSecond);
-    SmartDashboard.putNumber("Actual VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
-    SmartDashboard.putNumber("Actual Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
+    // SmartDashboard.putNumber("Actual VelocityX", m_robotContainer.drivetrain.getState().Speeds.vxMetersPerSecond);
+    // SmartDashboard.putNumber("Actual VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
+    // SmartDashboard.putNumber("Actual Omega"`, m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
 
     double[] defaultValue = {0,0,0,0,0,0}; // default value required by getDoubleArray
     camera = cameraPose.getDoubleArray(defaultValue);
