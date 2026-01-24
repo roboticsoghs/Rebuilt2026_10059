@@ -29,6 +29,7 @@ import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.FuelSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
+import frc.robot.subsystems.Vision;
 
 public class RobotContainer {
     public double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -42,13 +43,17 @@ public class RobotContainer {
 
     public final CommandXboxController joystick = new CommandXboxController(0);
 
-    // public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
+    public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
 
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
 
     private final IndexerSubsystem indexer = new IndexerSubsystem();
 
     private final FuelSubsystem fuel = new FuelSubsystem();
+
+    private final Vision vision = new Vision();
+
+    private boolean autoAngleActive = false;
 
     // joystick command configs
     // TODO: move joystick command to seperate command file
@@ -102,6 +107,14 @@ public class RobotContainer {
         //             .withRotationalRate(o * MaxAngularRate);
         //     })
         // );
+
+        drivetrain.setDefaultCommand(
+            Commands.parallel(
+                Commands.run(() -> {
+                    vision.faceAprilTag(drivetrain, drive, brake);
+                }, vision).onlyWhile(() -> !autoAngleActive && vision.getId() == 10 || vision.getId() == 26)
+            )
+        );
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
@@ -165,6 +178,15 @@ public class RobotContainer {
                 fuel.stop();
             })
         );
+
+        joystick.povUp().onTrue(
+            Commands.runOnce(() -> autoAngleActive = !autoAngleActive, vision).onlyIf(() -> vision.getId() == 10 || vision.getId() == 26)
+        );
+ =
+        joystick.povDown().onTrue(
+            Commands.run(() -> vision.adjustDistance(drivetrain, drive, brake))
+        );
+
 
         // reset the field-centric heading on left bumper press
         // joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));

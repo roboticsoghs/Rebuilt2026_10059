@@ -97,9 +97,19 @@ public class Vision extends SubsystemBase {
         double xOffset = getX();
         double zOffset = getZ();
         double theta = Math.atan(xOffset / zOffset);
+        double error = 0 - theta;
 
         drivetrain.setControl(
-            drive.withRotationalRate(theta)
+            drive.withRotationalRate(error)
+        );
+    }
+
+    public void adjustDistance(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake) {
+        double distOffset = getZ();
+        double error = 4.75 - distOffset;
+
+        drivetrain.setControl(
+            drive.withVelocityY(error)
         );
     }
 }
