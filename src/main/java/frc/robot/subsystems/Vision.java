@@ -72,7 +72,7 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putNumber("Distance to chute", isChuteTag() ? getZ() : 0);
     }
 
-    // Get them values yo (eggs)
+    // get values relative to april tag
     public boolean isAprilTag(){
         return x != 0 && z != 0;
     }
