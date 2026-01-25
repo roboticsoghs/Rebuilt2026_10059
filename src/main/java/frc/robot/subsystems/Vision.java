@@ -23,15 +23,12 @@ public class Vision extends SubsystemBase {
     private long aprilTagId;
     private double[] camera = new double[6];
 
-    private int alignState;
-
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry cameraPose = table.getEntry("targetpose_cameraspace");
 
     // Initializing da alignState and aprilTagId
     public Vision() {
         aprilTagId = 0;
-        alignState = -1;
     }
 
     @Override
@@ -53,18 +50,13 @@ public class Vision extends SubsystemBase {
 
         SmartDashboard.putNumber("LimelightX", x);
         SmartDashboard.putNumber("LimelightY", y);
-        SmartDashboard.putNumber("LimeLightZ", z);
+        SmartDashboard.putNumber("LimelightZ", z);
 
-        SmartDashboard.putNumber("LimeLight Pitch", pitch);
-        SmartDashboard.putNumber("LimeLight Yaw", yaw);
-        SmartDashboard.putNumber("LimeLight Roll", roll);
+        SmartDashboard.putNumber("Limelight Pitch", pitch);
+        SmartDashboard.putNumber("Limelight Yaw", yaw);
+        SmartDashboard.putNumber("Limelight Roll", roll);
 
-        SmartDashboard.putNumber("April Tag Id", aprilTagId);
-        SmartDashboard.putBoolean("Is April ther?", isAprilSeen());
-
-        SmartDashboard.putNumber("Align state", alignState);
-
-
+        SmartDashboard.putNumber("AprilTag ID", aprilTagId);
     }
 
     // Get them values yo (eggs)
@@ -111,5 +103,9 @@ public class Vision extends SubsystemBase {
         drivetrain.setControl(
             drive.withVelocityY(error)
         );
+    }
+
+    public boolean isChuteTag() {
+        return getId() == 10 || getId() == 26;
     }
 }

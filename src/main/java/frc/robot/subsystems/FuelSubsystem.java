@@ -1,8 +1,8 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkBase.PersistMode;
-import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.PersistMode;
+import com.revrobotics.ResetMode;
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkMaxConfig;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
@@ -26,8 +26,16 @@ public class FuelSubsystem extends SubsystemBase{
         fuel.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
-    public void spinUp(double setpoint) {
-        fuel.set(setpoint);
+    public void startHopperIntake() {
+        fuel.set(0.75);
+    }
+
+    public void runUp() {
+        fuel.set(1.0);
+    }
+
+    public void startGroundOuttake() {
+        fuel.set(-0.5);
     }
 
     public void stop() {

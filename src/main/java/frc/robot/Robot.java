@@ -17,19 +17,10 @@ import edu.wpi.first.wpilibj2.command.Commands;
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
-  public final RobotContainer m_robotContainer;
+  private final RobotContainer m_robotContainer;
 
-  NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
-  NetworkTableEntry cameraPose = table.getEntry("targetpose_cameraspace");
-  
-  private double x;
-  private double y;
-  private double z;
-  private double pitch;
-  private double yaw;
-  private double roll;
-  private long aprilTagId;
-  private double[] camera = new double[6];
+  private boolean flash = false;
+  private double lastFlash = 0.5;
 
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -41,35 +32,25 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("ROBOT READY", DriverStation.isJoystickConnected(0) && DriverStation.isDSAttached());
     SmartDashboard.putBoolean("FMS CONNECTED", DriverStation.isFMSAttached());
 
-    // SmartDashboard.putNumber("Actual VelocityX", m_robotContainer.drivetrain.getState().Speeds.vxMetersPerSecond);
-    // SmartDashboard.putNumber("Actual VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
-    // SmartDashboard.putNumber("Actual Omega"`, m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
+    SmartDashboard.putNumber("Actual VelocityX", m_robotContainer.drivetrain.getState().Speeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Actual VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("Actual Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
+ 
+    Command selectedAuto = m_robotContainer.getAutonomousCommand();
+    boolean noAutoSelectedWarn = selectedAuto == null || selectedAuto.getName() == "Nothing";
 
-    double[] defaultValue = {0,0,0,0,0,0}; // default value required by getDoubleArray
-    camera = cameraPose.getDoubleArray(defaultValue);
-    long defaultValueID = 0;
-    aprilTagId = table.getEntry("tid").getInteger(defaultValueID);
+    double now = System.currentTimeMillis();
+    if (noAutoSelectedWarn) {
+        if (now - lastFlash > 0.5) {
+            flash = !flash;
+            lastFlash = now;
+        }
+    } else {
+        flash = false;
+    }
 
-    // limelight 3D offsets relative to camera
-    x = camera[0]; // in meters
-    y = camera[1]; // in meters
-    z = camera[2]; // distance in meters
-    pitch = camera[3];
-    yaw = camera[4];
-    roll = camera[5];
-
-    // angleX = ca
-
-    //post to smart dashboard periodically
-    SmartDashboard.putNumber("LimelightX", x);
-    SmartDashboard.putNumber("LimelightY", y);
-    SmartDashboard.putNumber("LimelightZ", z);
-
-    SmartDashboard.putNumber("Limelight Pitch", pitch);
-    SmartDashboard.putNumber("Limelight Yaw", yaw);
-    SmartDashboard.putNumber("Limelight Roll", roll);
-
-    SmartDashboard.putNumber("AprilTag ID", aprilTagId);
+    SmartDashboard.putBoolean("NO AUTO WARN", flash);
+    SmartDashboard.putString("selected auto", selectedAuto.getName());
   }
 
   @Override
@@ -99,11 +80,13 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void autonomousExit() {}
+  public void autonomousExit() {
+    SmartDashboard.putBoolean("AUTO FINISHED", true);
+  }
 
   @Override
   public void teleopInit() {
-      SmartDashboard.putBoolean("TELEOP READY", true);
+    SmartDashboard.putBoolean("TELEOP READY", true);
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
