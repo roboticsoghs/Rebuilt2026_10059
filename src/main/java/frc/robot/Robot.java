@@ -19,9 +19,6 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
 
-  private boolean flash = false;
-  private double lastFlash = 0.5;
-
   public Robot() {
     m_robotContainer = new RobotContainer();
   }
@@ -35,22 +32,6 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Actual VelocityX", m_robotContainer.drivetrain.getState().Speeds.vxMetersPerSecond);
     SmartDashboard.putNumber("Actual VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
     SmartDashboard.putNumber("Actual Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
- 
-    Command selectedAuto = m_robotContainer.getAutonomousCommand();
-    boolean noAutoSelectedWarn = selectedAuto == null || selectedAuto.getName() == "Nothing";
-
-    double now = System.currentTimeMillis();
-    if (noAutoSelectedWarn) {
-        if (now - lastFlash > 0.5) {
-            flash = !flash;
-            lastFlash = now;
-        }
-    } else {
-        flash = false;
-    }
-
-    SmartDashboard.putBoolean("NO AUTO WARN", flash);
-    SmartDashboard.putString("selected auto", selectedAuto.getName());
   }
 
   @Override
@@ -70,7 +51,7 @@ public class Robot extends TimedRobot {
     m_autonomousCommand = m_robotContainer.getAutonomousCommand();
     SmartDashboard.putBoolean("AUTO READY", true);
     if (m_autonomousCommand != null) {
-      m_autonomousCommand.schedule();
+      CommandScheduler.getInstance().schedule(m_autonomousCommand);
     }
   }
 

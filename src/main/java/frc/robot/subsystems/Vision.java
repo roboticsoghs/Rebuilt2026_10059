@@ -48,19 +48,32 @@ public class Vision extends SubsystemBase {
         yaw = camera[4];
         roll = camera[5];
 
-        SmartDashboard.putNumber("LimelightX", x);
-        SmartDashboard.putNumber("LimelightY", y);
-        SmartDashboard.putNumber("LimelightZ", z);
+        // SmartDashboard.putNumber("LimelightX", x);
+        // SmartDashboard.putNumber("LimelightY", y);
+        // SmartDashboard.putNumber("LimelightZ", z);
 
-        SmartDashboard.putNumber("Limelight Pitch", pitch);
-        SmartDashboard.putNumber("Limelight Yaw", yaw);
-        SmartDashboard.putNumber("Limelight Roll", roll);
+        // SmartDashboard.putNumber("Limelight Pitch", pitch);
+        // SmartDashboard.putNumber("Limelight Yaw", yaw);
+        // SmartDashboard.putNumber("Limelight Roll", roll);
 
-        SmartDashboard.putNumber("AprilTag ID", aprilTagId);
+        // SmartDashboard.putNumber("AprilTag ID", aprilTagId);
+
+        // TODO:
+        // auto routines during teleop
+        //  - auto start INTAKE into HOPPER when TRENCH AprilTag detected
+        //  - auto aim and adjust distance using CHUTE AprilTags after joystick trigger
+        //     - shooting must be manual
+
+        // TODO:
+        // Auton
+        //  - center start -> forward till AprilTag seen, aim and shoot using AprilTag
+        //  - left/right start -> move towards center and rotate till AprilTag seen, aim and shoot
+
+        SmartDashboard.putNumber("Distance to chute", isChuteTag() ? getZ() : 0);
     }
 
     // Get them values yo (eggs)
-    public boolean isAprilSeen(){
+    public boolean isAprilTag(){
         return x != 0 && z != 0;
     }
     public double getX() {
