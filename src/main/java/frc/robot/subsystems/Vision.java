@@ -28,7 +28,7 @@ public class Vision extends SubsystemBase {
 
     // Initializing da alignState and aprilTagId
     public Vision() {
-        aprilTagId = 0;
+        aprilTagId = -1;
     }
 
     @Override
@@ -56,7 +56,7 @@ public class Vision extends SubsystemBase {
         // SmartDashboard.putNumber("Limelight Yaw", yaw);
         // SmartDashboard.putNumber("Limelight Roll", roll);
 
-        // SmartDashboard.putNumber("AprilTag ID", aprilTagId);
+        SmartDashboard.putNumber("AprilTag ID", aprilTagId);
 
         // TODO:
         // auto routines during teleop
@@ -70,6 +70,7 @@ public class Vision extends SubsystemBase {
         //  - left/right start -> move towards center and rotate till AprilTag seen, aim and shoot
 
         SmartDashboard.putNumber("Distance to chute", isChuteTag() ? getZ() : 0);
+        SmartDashboard.putBoolean("trench tag", isEntryTrenchTag());
     }
 
     // get values relative to april tag
@@ -120,5 +121,10 @@ public class Vision extends SubsystemBase {
 
     public boolean isChuteTag() {
         return getId() == 10 || getId() == 26;
+    }
+
+    public boolean isEntryTrenchTag() {
+        // return getId() == 28 || getId() == 23 || getId() == 7 || getId() == 12;
+        return getId() == 7;
     }
 }

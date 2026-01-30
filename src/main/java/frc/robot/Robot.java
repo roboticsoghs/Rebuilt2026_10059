@@ -13,11 +13,16 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
+import frc.robot.subsystems.FuelSubsystem;
+import frc.robot.subsystems.Vision;
+import frc.robot.RobotContainer;
+import frc.robot.subsystems.FuelSubsystem;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
 
   private final RobotContainer m_robotContainer;
+  
 
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -29,9 +34,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("ROBOT READY", DriverStation.isJoystickConnected(0) && DriverStation.isDSAttached());
     SmartDashboard.putBoolean("FMS CONNECTED", DriverStation.isFMSAttached());
 
-    SmartDashboard.putNumber("Actual VelocityX", m_robotContainer.drivetrain.getState().Speeds.vxMetersPerSecond);
-    SmartDashboard.putNumber("Actual VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
-    SmartDashboard.putNumber("Actual Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
+    // SmartDashboard.putNumber("Actual VelocityX", m_robotContainer.drivetrain.getState().Speeds.vxMetersPerSecond);
+    // SmartDashboard.putNumber("Actual VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
+    // SmartDashboard.putNumber("Actual Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
   }
 
   @Override
@@ -71,10 +76,20 @@ public class Robot extends TimedRobot {
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    // Commands.run(() -> m_robotContainer.indexer.startHopperIntake(), m_robotContainer.indexer).onlyIf(() -> m_robotContainer.vision.isEntryTrenchTag()).repeatedly();
+    //m_robotContainer.indexer.startHopperIntake()
+
+    
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    Command autointake = Commands.parallel(
+        Commands.run(() -> m_robotContainer.fuel.startHopperIntake(), m_robotContainer.fuel),
+        Commands.run(() -> m_robotContainer.indexer.startHopperIntake(), m_robotContainer.indexer)
+    ).onlyIf(() -> m_robotContainer.vision.isEntryTrenchTag());
+    CommandScheduler.getInstance().schedule(autointake);
+  }
 
   @Override
   public void teleopExit() {}
