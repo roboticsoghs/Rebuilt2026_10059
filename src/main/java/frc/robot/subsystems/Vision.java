@@ -37,7 +37,7 @@ public class Vision extends SubsystemBase {
         // read da value periodically
         double[] defaultValue = {0,0,0,0,0,0};
         camera = cameraPose.getDoubleArray(defaultValue);
-        long defaultValueId = 0;
+        long defaultValueId = -1;
         aprilTagId = table.getEntry("tid").getInteger(defaultValueId);
 
         // limelight 3d offset

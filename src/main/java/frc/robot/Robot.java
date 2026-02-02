@@ -23,6 +23,7 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
   
+  private boolean isAutoIntakeRunning = false;
 
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -84,10 +85,19 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    Command autointake = Commands.parallel(
-        Commands.run(() -> m_robotContainer.fuel.startHopperIntake(), m_robotContainer.fuel),
-        Commands.run(() -> m_robotContainer.indexer.startHopperIntake(), m_robotContainer.indexer)
-    ).onlyIf(() -> m_robotContainer.vision.isEntryTrenchTag());
+    Command autointake = Commands.sequence(
+      Commands.runOnce(() -> {
+        m_robotContainer.fuel.startHopperIntake();
+        m_robotContainer.indexer.startHopperIntake();
+        isAutoIntakeRunning = true;
+      }),
+      Commands.waitSeconds(5),
+      Commands.runOnce(() -> {
+        m_robotContainer.fuel.stop();
+        m_robotContainer.indexer.stop();
+        isAutoIntakeRunning = false;
+      })
+    ).onlyIf(() -> (m_robotContainer.vision.isEntryTrenchTag() && !isAutoIntakeRunning));
     CommandScheduler.getInstance().schedule(autointake);
   }
 
