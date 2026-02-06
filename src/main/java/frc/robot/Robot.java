@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -39,6 +41,12 @@ public class Robot extends TimedRobot {
     // SmartDashboard.putNumber("Actual VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
     // SmartDashboard.putNumber("Actual Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
   }
+  @Override
+  public void robotInit() {
+    CameraServer.startAutomaticCapture(1);
+    System.out.println("Robot Initialized");
+  }
+
 
   @Override
   public void disabledInit() {
@@ -74,6 +82,7 @@ public class Robot extends TimedRobot {
   @Override
   public void teleopInit() {
     SmartDashboard.putBoolean("TELEOP READY", true);
+
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
