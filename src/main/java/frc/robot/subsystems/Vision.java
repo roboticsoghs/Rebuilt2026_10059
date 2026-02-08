@@ -64,10 +64,6 @@ public class Vision extends SubsystemBase {
         //  - auto aim and adjust distance using CHUTE AprilTags after joystick trigger
         //     - shooting must be manual
 
-        // TODO:
-        // Auton
-        //  - center start -> forward till AprilTag seen, aim and shoot using AprilTag
-        //  - left/right start -> move towards center and rotate till AprilTag seen, aim and shoot
 
         SmartDashboard.putNumber("Distance to chute", isChuteTag() ? getZ() : 0);
         SmartDashboard.putBoolean("trench tag", isEntryTrenchTag());
