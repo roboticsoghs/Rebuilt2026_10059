@@ -40,7 +40,7 @@ public class RobotContainer {
     public final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
     public final XboxController joystick = new XboxController(0);
-// 
+
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final IndexerSubsystem indexer = new IndexerSubsystem();
     public final FuelSubsystem fuel = new FuelSubsystem();
@@ -75,20 +75,23 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
 
         Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
-        CommandScheduler.getInstance().schedule(joystickCommand);
         
         // Command defaultCommand = Commands.parallel(
         //     new Controls(vision, fuel, indexer, joystick)
         // );
 
-        // drivetrain.setDefaultCommand(defaultCommand);
+        Command defaultCommand = Commands.parallel(
+            joystickCommand
+        );
+
+        drivetrain.setDefaultCommand(defaultCommand);
 
         // Idle while the robot is disabled. This ensures the configured
         // neutral mode is applied to the drive motors while disabled.
-        // final var idle = new SwerveRequest.Idle();
-        // RobotModeTriggers.disabled().whileTrue(
-        //     drivetrain.applyRequest(() -> idle).ignoringDisable(true)
-        // );
+        final var idle = new SwerveRequest.Idle();
+        RobotModeTriggers.disabled().whileTrue(
+            drivetrain.applyRequest(() -> idle).ignoringDisable(true)
+        );
 
         // joystick.povUp().onTrue(
         //     Commands.runOnce(() -> autoAngleActive = !autoAngleActive, vision)

@@ -116,11 +116,11 @@ public class Vision extends SubsystemBase {
     }
 
     public boolean isChuteTag() {
-        return getId() == 10 || getId() == 26;
+        return getId() == 10 || getId() == 26 || getId() == 0; // 0 is test btw
     }
 
     public boolean isEntryTrenchTag() {
-        // return getId() == 28 || getId() == 23 || getId() == 7 || getId() == 12;
-        return getId() == 7;
+        return getId() == 28 || getId() == 23 || getId() == 7 || getId() == 12; // 0 is test btw
+        // return getId() == 7;
     }
 }

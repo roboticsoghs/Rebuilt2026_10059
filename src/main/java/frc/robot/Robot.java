@@ -4,13 +4,13 @@
 
 package frc.robot;
 
-import edu.wpi.first.cameraserver.CameraServer;
-import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
@@ -37,13 +37,12 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("ROBOT READY", DriverStation.isJoystickConnected(0) && DriverStation.isDSAttached());
     SmartDashboard.putBoolean("FMS CONNECTED", DriverStation.isFMSAttached());
 
-    // SmartDashboard.putNumber("Actual VelocityX", m_robotContainer.drivetrain.getState().Speeds.vxMetersPerSecond);
-    // SmartDashboard.putNumber("Actual VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
-    // SmartDashboard.putNumber("Actual Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
+    SmartDashboard.putNumber("Actual VelocityX", m_robotContainer.drivetrain.getState().Speeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Actual VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("Actual Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
   }
   @Override
   public void robotInit() {
-    CameraServer.startAutomaticCapture(1);
     System.out.println("Robot Initialized");
   }
 
@@ -100,6 +99,9 @@ public class Robot extends TimedRobot {
         m_robotContainer.indexer.startHopperIntake();
         isAutoIntakeRunning = true;
       }),
+      // Commands.runOnce(() -> {
+      //   m_robotContainer.joystick.setRumble(RumbleType.kBothRumble, 1);
+      // }),
       Commands.waitSeconds(5),
       Commands.runOnce(() -> {
         m_robotContainer.fuel.stop();
@@ -108,6 +110,9 @@ public class Robot extends TimedRobot {
       })
     ).onlyIf(() -> (m_robotContainer.vision.isEntryTrenchTag() && !isAutoIntakeRunning));
     CommandScheduler.getInstance().schedule(autointake);
+    // Commands.run(() -> {
+    //     m_robotContainer.joystick.setRumble(RumbleType.kBothRumble, 0.5);
+    //   });
   }
 
   @Override
