@@ -31,26 +31,26 @@ public class Controls extends ParallelCommandGroup{
         double MaxAngRate
     ) {
        addCommands(
-            // Intake NOW!
-            Commands.runOnce(() -> {
+            // ground intake
+            Commands.run(() -> {
                 indexer.startHopperIntake();
                 fuel.startHopperIntake();
             }, indexer, fuel).onlyWhile(() -> joystick.getLeftTriggerAxis() >= 0.1),
 
-            // Ground giveaway!
-            Commands.runOnce(() -> {
+            // Ground outtake
+            Commands.run(() -> {
                 indexer.startGroundOuttake();
                 fuel.startGroundOuttake();
             }).onlyWhile(() -> joystick.getLeftBumperButton()),
 
-            // Start ze motor to pump ze bullets
-            Commands.runOnce(() -> fuel.runUp()).onlyWhile(() -> joystick.getRightBumperButton()),
+            // spin up shooter
+            Commands.run(() -> fuel.runUp()).onlyWhile(() -> joystick.getRightBumperButton()),
 
-            // chute da dang chute
-            Commands.runOnce(() -> indexer.startShooterFeed()).onlyWhile(() -> joystick.getRightTriggerAxis() >= 0.1),
+            // feed shooter
+            Commands.run(() -> indexer.startShooterFeed()).onlyWhile(() -> joystick.getRightTriggerAxis() >= 0.1),
 
-            // SHUT IT DOWN AZ-5!!!!
-            Commands.runOnce(() -> {
+            // stop fuel system
+            Commands.run(() -> {
                 indexer.stop();
                 fuel.stop();
             }).onlyWhile(() -> joystick.getYButton()),

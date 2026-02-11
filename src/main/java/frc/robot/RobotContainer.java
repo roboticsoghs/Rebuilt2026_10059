@@ -80,9 +80,7 @@ public class RobotContainer {
         //     new Controls(vision, fuel, indexer, joystick)
         // );
 
-        Command defaultCommand = Commands.parallel(
-            joystickCommand
-        );
+        Command defaultCommand = joystickCommand;
 
         drivetrain.setDefaultCommand(defaultCommand);
 
