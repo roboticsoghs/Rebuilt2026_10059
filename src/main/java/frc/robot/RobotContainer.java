@@ -39,7 +39,7 @@ public class RobotContainer {
             .withDriveRequestType(DriveRequestType.OpenLoopVoltage); // Use open-loop control for drive motors
     public final SwerveRequest.SwerveDriveBrake brake = new SwerveRequest.SwerveDriveBrake();
 
-    public final XboxController joystick = new XboxController(0);
+    public final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final IndexerSubsystem indexer = new IndexerSubsystem();
@@ -75,13 +75,37 @@ public class RobotContainer {
         // and Y is defined as to the left according to WPILib convention.
 
         Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
-        
-        // Command defaultCommand = Commands.parallel(
-        //     new Controls(vision, fuel, indexer, joystick)
-        // );
+
+        joystick.rightTrigger(0.1).whileTrue(
+            Commands.runOnce(() -> indexer.startShooterFeed(), fuel)
+        );
+
+        joystick.rightBumper().whileTrue(
+            Commands.runOnce(() -> fuel.runUp(), fuel)
+        );
+
+        joystick.y().whileTrue(
+            Commands.runOnce(() -> {
+                indexer.stop();
+                fuel.stop();
+            }, indexer, fuel)
+        );
+
+        joystick.leftBumper().whileTrue(
+            Commands.runOnce(() -> {
+                indexer.startGroundOuttake();
+                fuel.startGroundOuttake();
+            }, indexer, fuel)
+        );
+
+        joystick.leftTrigger(0.1).whileTrue(
+            Commands.runOnce(() -> {
+                indexer.startHopperIntake();
+                fuel.startHopperIntake();
+            }, indexer, fuel)
+        );
 
         Command defaultCommand = joystickCommand;
-
         drivetrain.setDefaultCommand(defaultCommand);
 
         // Idle while the robot is disabled. This ensures the configured

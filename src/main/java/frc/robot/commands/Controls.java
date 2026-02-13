@@ -26,39 +26,11 @@ public class Controls extends ParallelCommandGroup{
         Vision vision,
         FuelSubsystem fuel, 
         IndexerSubsystem indexer, 
-        XboxController joystick,
+        CommandXboxController joystick,
         double MaxSpeed,
         double MaxAngRate
     ) {
        addCommands(
-            // ground intake
-            Commands.run(() -> {
-                indexer.startHopperIntake();
-                fuel.startHopperIntake();
-            }, indexer, fuel).onlyWhile(() -> joystick.getLeftTriggerAxis() >= 0.1),
-
-            // Ground outtake
-            Commands.run(() -> {
-                indexer.startGroundOuttake();
-                fuel.startGroundOuttake();
-            }).onlyWhile(() -> joystick.getLeftBumperButton()),
-
-            // spin up shooter
-            Commands.run(() -> fuel.runUp()).onlyWhile(() -> joystick.getRightBumperButton()),
-
-            // feed shooter
-            Commands.run(() -> indexer.startShooterFeed()).onlyWhile(() -> joystick.getRightTriggerAxis() >= 0.1),
-
-            // stop fuel system
-            Commands.run(() -> {
-                indexer.stop();
-                fuel.stop();
-            }).onlyWhile(() -> joystick.getYButton()),
-
-            // Driving Controls (vroom vroom)
-            // Commands.run(() -> {
-            //     vision.faceAprilTag(drivetrain, drive, brake);
-            // }, vision).onlyWhile(() -> autoAngleActive && vision.isChuteTag()),
             drivetrain.applyRequest(() -> {
                 double vx = logScale(-joystick.getLeftY(), Constants.DRIVE_DEADBAND, Constants.kDrive);
                 double vy = logScale(-joystick.getLeftX(), Constants.DRIVE_DEADBAND, Constants.kDrive);
