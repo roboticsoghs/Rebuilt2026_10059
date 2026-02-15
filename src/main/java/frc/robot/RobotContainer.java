@@ -31,7 +31,7 @@ import frc.robot.commands.Controls;
 
 public class RobotContainer {
     public double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    public double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    public double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     public final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -76,29 +76,38 @@ public class RobotContainer {
 
         Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
 
-        joystick.rightTrigger(0.1).whileTrue(
-            Commands.runOnce(() -> indexer.startShooterFeed(), fuel)
+        Command singleShotCommand = Commands.repeatingSequence(
+            Commands.runOnce(() -> indexer.startShooterFeed(), indexer),
+            Commands.waitSeconds(1),
+            Commands.runOnce(() -> indexer.stop()),
+            Commands.waitSeconds(1.25)
         );
 
-        joystick.rightBumper().whileTrue(
-            Commands.runOnce(() -> fuel.runUp(), fuel)
+        joystick.rightTrigger(0.1).onTrue(
+            // Commands.runOnce(() -> indexer.startShooterFeed(), fuel)
+            Commands.sequence(
+                Commands.runOnce(() -> fuel.runUp(), fuel),
+                Commands.waitSeconds(3)
+                .alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer)),
+                singleShotCommand
+            )
         );
 
-        joystick.y().whileTrue(
+        joystick.y().onTrue(
             Commands.runOnce(() -> {
                 indexer.stop();
                 fuel.stop();
             }, indexer, fuel)
         );
 
-        joystick.leftBumper().whileTrue(
+        joystick.leftBumper().onTrue(
             Commands.runOnce(() -> {
                 indexer.startGroundOuttake();
                 fuel.startGroundOuttake();
             }, indexer, fuel)
         );
 
-        joystick.leftTrigger(0.1).whileTrue(
+        joystick.leftTrigger(0.1).onTrue(
             Commands.runOnce(() -> {
                 indexer.startHopperIntake();
                 fuel.startHopperIntake();
@@ -124,7 +133,7 @@ public class RobotContainer {
 
 
         // reset the field-centric heading on left bumper press
-        // joystick.leftBumper().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
+        joystick.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
     }
 
     public Command getAutonomousCommand() {

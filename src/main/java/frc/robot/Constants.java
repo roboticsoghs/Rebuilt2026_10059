@@ -19,7 +19,7 @@ import frc.robot.generated.TunerConstants;
 public final class Constants {
     // Drive train constants
     public static final double DRIVE_DEADBAND = 0.03;
-    public static final double ROT_DEADBAND = 0.03;
+    public static final double ROT_DEADBAND = 0.05;
     public static final double kDrive = 5;
     public static final double kRot = 7;
 }

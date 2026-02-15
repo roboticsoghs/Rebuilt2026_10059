@@ -20,7 +20,7 @@ public class FuelSubsystem extends SubsystemBase {
         config = new SparkMaxConfig();
 
         config.openLoopRampRate(2);
-        config.smartCurrentLimit(60);
+        config.smartCurrentLimit(50);
         config.inverted(true);
         config.idleMode(IdleMode.kCoast);
 
@@ -28,7 +28,7 @@ public class FuelSubsystem extends SubsystemBase {
     }
 
     public void startHopperIntake() {
-        fuel.set(0.75);
+        fuel.set(0.60);
     }
 
     public void runUp() {
@@ -36,10 +36,10 @@ public class FuelSubsystem extends SubsystemBase {
     }
 
     public void startGroundOuttake() {
-        fuel.set(-0.5);
+        fuel.set(-0.6);
     }
 
     public void stop() {
-        fuel.set(0);
+        fuel.stopMotor();
     }
 }

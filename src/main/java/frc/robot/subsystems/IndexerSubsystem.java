@@ -19,7 +19,7 @@ public class IndexerSubsystem extends SubsystemBase{
         config = new SparkMaxConfig();
 
         config.openLoopRampRate(2);
-        config.smartCurrentLimit(60);
+        config.smartCurrentLimit(40);
         config.idleMode(IdleMode.kCoast);
 
         indexer.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -30,14 +30,14 @@ public class IndexerSubsystem extends SubsystemBase{
     }
 
     public void startShooterFeed() {
-        indexer.set(0.7);
+        indexer.set(1.0);
     }
 
     public void startGroundOuttake() {
-        indexer.set(0.4);
+        indexer.set(0.45);
     }
 
     public void stop() {
-        indexer.set(0);
+        indexer.stopMotor();
     }
 }
