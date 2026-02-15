@@ -34,13 +34,18 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     CommandScheduler.getInstance().run(); 
+
+    // Robot Diagnostics
     SmartDashboard.putBoolean("ROBOT READY", DriverStation.isJoystickConnected(0) && DriverStation.isDSAttached());
     SmartDashboard.putBoolean("FMS CONNECTED", DriverStation.isFMSAttached());
 
-    SmartDashboard.putNumber("Actual VelocityX", m_robotContainer.drivetrain.getState().Speeds.vxMetersPerSecond);
-    SmartDashboard.putNumber("Actual VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
-    SmartDashboard.putNumber("Actual Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
+    SmartDashboard.putNumber("Robot VelocityX", m_robotContainer.drivetrain.getState().Speeds.vxMetersPerSecond);
+    SmartDashboard.putNumber("Robot VelocityY", m_robotContainer.drivetrain.getState().Speeds.vyMetersPerSecond);
+    SmartDashboard.putNumber("Robot Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
+  
+    SmartDashboard.putNumber("FuelSubsystem Motor Temp", m_robotContainer.fuel.motor.getMotorTemperature());
   }
+
   @Override
   public void robotInit() {
     System.out.println("Robot Initialized");
