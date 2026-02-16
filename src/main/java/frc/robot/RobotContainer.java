@@ -33,7 +33,7 @@ import frc.robot.commands.Controls;
 
 public class RobotContainer {
     public double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
-    public double MaxAngularRate = RotationsPerSecond.of(0.5).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
+    public double MaxAngularRate = RotationsPerSecond.of(0.75).in(RadiansPerSecond); // 3/4 of a rotation per second max angular velocity
 
     /* Setting up bindings for necessary control of the swerve drive platform */
     public final SwerveRequest.FieldCentric drive = new SwerveRequest.FieldCentric()
@@ -78,21 +78,18 @@ public class RobotContainer {
 
         Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
 
-        Command singleShotCommand = Commands.repeatingSequence(
+        Command indexWhenReady = Commands.repeatingSequence(
+            Commands.waitUntil(() -> fuel.pid.isAtSetpoint()),
             Commands.runOnce(() -> indexer.startShooterFeed(), indexer),
-            Commands.waitSeconds(1),
-            Commands.runOnce(() -> indexer.stop()),
-            Commands.waitSeconds(1.25)
+            Commands.waitSeconds(0.5),
+            Commands.runOnce(() -> indexer.stop(), indexer)
         );
 
         joystick.rightTrigger(0.1).onTrue(
             Commands.sequence(
-                Commands.runOnce(() -> fuel.runUp(), fuel),
-                Commands.waitSeconds(3),    
-                Commands.runOnce(() -> indexer.startShooterFeed(), indexer)
-                // Commands.waitSeconds(3)
-                // .alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer))
-                // singleShotCommand
+                Commands.runOnce(() -> fuel.runUp(), fuel).
+                alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer)),
+                indexWhenReady
             )
         );
 

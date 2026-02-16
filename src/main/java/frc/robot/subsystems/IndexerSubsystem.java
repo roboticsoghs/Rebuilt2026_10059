@@ -17,10 +17,10 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class IndexerSubsystem extends SubsystemBase{
     private final int motorID = 14;
-    public final SparkMax Motor;
+    public final SparkMax motor;
     private final SparkMaxConfig config;
     public final SparkClosedLoopController pid;
-    private final RelativeEncoder encoder;
+    public final RelativeEncoder encoder;
 
     private final double SmartVelocityP = 0.00025;
     private final double SmartVelocityI = 0;
@@ -33,12 +33,12 @@ public class IndexerSubsystem extends SubsystemBase{
     double encoderValue;
 
     public IndexerSubsystem() {
-        Motor = new SparkMax(this.motorID, MotorType.kBrushless);
+        motor = new SparkMax(this.motorID, MotorType.kBrushless);
         config = new SparkMaxConfig();
         encoderValue = 0;
 
-        pid = Motor.getClosedLoopController();
-        encoder = Motor.getEncoder();
+        pid = motor.getClosedLoopController();
+        encoder = motor.getEncoder();
 
         config.voltageCompensation(12);
         config.smartCurrentLimit(60);
@@ -55,7 +55,7 @@ public class IndexerSubsystem extends SubsystemBase{
         config.closedLoop.feedForward.kS(0.225, ClosedLoopSlot.kSlot0).kV(8.0 / (maxVel * 0.9), ClosedLoopSlot.kSlot0).kA(0.0, ClosedLoopSlot.kSlot0);
     
         config.signals.primaryEncoderPositionPeriodMs(5);
-        Motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
@@ -65,7 +65,7 @@ public class IndexerSubsystem extends SubsystemBase{
     }
 
     public void startHopperIntake() {
-        pid.setSetpoint(-0.5 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        pid.setSetpoint(-0.6 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
     }
 
     public void startShooterFeed() {
@@ -77,6 +77,6 @@ public class IndexerSubsystem extends SubsystemBase{
     }
 
     public void stop() {
-        Motor.stopMotor();
+        motor.stopMotor();
     }
 }

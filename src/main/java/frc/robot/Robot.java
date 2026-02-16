@@ -44,7 +44,9 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Robot Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
   
     SmartDashboard.putNumber("FuelSubsystem Motor Temp", m_robotContainer.fuel.motor.getMotorTemperature());
-    SmartDashboard.putBoolean("FuelSystem Overheat Warn", m_robotContainer.fuel.motor.getMotorTemperature() >= 70);
+    SmartDashboard.putBoolean("FuelSystem Overheat Warn", m_robotContainer.fuel.motor.getMotorTemperature() >= 50);
+    SmartDashboard.putNumber("Indexer Motor Temp", m_robotContainer.indexer.motor.getMotorTemperature());
+    SmartDashboard.putBoolean("Indexer Overheat Warn", m_robotContainer.indexer.motor.getMotorTemperature() >= 50);
   }
 
   @Override
@@ -99,23 +101,23 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopPeriodic() {
-    Command autointake = Commands.sequence(
-      Commands.runOnce(() -> {
-        m_robotContainer.fuel.startHopperIntake();
-        m_robotContainer.indexer.startHopperIntake();
-        isAutoIntakeRunning = true;
-      }),
+    // Command autointake = Commands.sequence(
+    //   Commands.runOnce(() -> {
+    //     m_robotContainer.fuel.startHopperIntake();
+    //     m_robotContainer.indexer.startHopperIntake();
+    //     isAutoIntakeRunning = true;
+    //   }),
       // Commands.runOnce(() -> {
       //   m_robotContainer.joystick.setRumble(RumbleType.kBothRumble, 1);
       // }),
-      Commands.waitSeconds(5),
-      Commands.runOnce(() -> {
-        m_robotContainer.fuel.stop();
-        m_robotContainer.indexer.stop();
-        isAutoIntakeRunning = false;
-      })
-    ).onlyIf(() -> (m_robotContainer.vision.isEntryTrenchTag() && !isAutoIntakeRunning));
-    CommandScheduler.getInstance().schedule(autointake);
+    //   Commands.waitSeconds(5),
+    //   Commands.runOnce(() -> {
+    //     m_robotContainer.fuel.stop();
+    //     m_robotContainer.indexer.stop();
+    //     isAutoIntakeRunning = false;
+    //   })
+    // ).onlyIf(() -> (m_robotContainer.vision.isEntryTrenchTag() && !isAutoIntakeRunning));
+    // CommandScheduler.getInstance().schedule(autointake);
     // Commands.run(() -> {
     //     m_robotContainer.joystick.setRumble(RumbleType.kBothRumble, 0.5);
     //   });

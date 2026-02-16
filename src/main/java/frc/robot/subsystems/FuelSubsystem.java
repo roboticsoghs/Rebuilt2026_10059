@@ -22,10 +22,10 @@ public class FuelSubsystem extends SubsystemBase {
     public final SparkMax motor;
     private final SparkMaxConfig config;
     public final SparkClosedLoopController pid;
-    private final RelativeEncoder encoder;
+    public final RelativeEncoder encoder;
 
     private final double maxAccel = 2700;
-    private final int maxVel = 6000; // 6000
+    private final int maxVel = 5500;
     public final double allowedError = 0.05;
 
     private final double SmartVelocityP = 0.0002;
@@ -71,7 +71,7 @@ public class FuelSubsystem extends SubsystemBase {
     }
 
     public void startHopperIntake() {
-        pid.setSetpoint(0.25 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        pid.setSetpoint(0.2 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
     }
 
     public void runUp() {
