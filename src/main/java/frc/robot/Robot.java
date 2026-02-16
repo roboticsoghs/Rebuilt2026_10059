@@ -44,6 +44,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Robot Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
   
     SmartDashboard.putNumber("FuelSubsystem Motor Temp", m_robotContainer.fuel.motor.getMotorTemperature());
+    SmartDashboard.putBoolean("FuelSystem Overheat Warn", m_robotContainer.fuel.motor.getMotorTemperature() >= 70);
   }
 
   @Override

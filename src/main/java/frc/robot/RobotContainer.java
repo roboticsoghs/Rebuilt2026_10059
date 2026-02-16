@@ -7,6 +7,8 @@ package frc.robot;
 import static edu.wpi.first.units.Units.*;
 
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.SparkBase.ControlType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -84,12 +86,13 @@ public class RobotContainer {
         );
 
         joystick.rightTrigger(0.1).onTrue(
-            // Commands.runOnce(() -> indexer.startShooterFeed(), fuel)
             Commands.sequence(
                 Commands.runOnce(() -> fuel.runUp(), fuel),
-                Commands.waitSeconds(3)
-                .alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer)),
-                singleShotCommand
+                Commands.waitSeconds(3),    
+                Commands.runOnce(() -> indexer.startShooterFeed(), indexer)
+                // Commands.waitSeconds(3)
+                // .alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer))
+                // singleShotCommand
             )
         );
 
