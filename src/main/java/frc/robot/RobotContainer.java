@@ -13,6 +13,7 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.RumbleType;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -61,7 +62,7 @@ public class RobotContainer {
         autoChooser.addOption("8P-CENTER", new EightPieceAutoFromCenter(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
         autoChooser.addOption("OneMeterSquare", new OneMeterSquare(drivetrain, drive, brake, MaxSpeed, MaxAngularRate));
 
-        autoDelaySelector.addOption("No delay", 0);
+        autoDelaySelector.setDefaultOption("No delay", 0);
         autoDelaySelector.addOption("1sec", 1);
         autoDelaySelector.addOption("2sec", 2);
         autoDelaySelector.addOption("3sec", 3);
@@ -78,19 +79,23 @@ public class RobotContainer {
 
         Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
 
-        Command indexWhenReady = Commands.repeatingSequence(
-            Commands.waitUntil(() -> fuel.pid.isAtSetpoint()),
+        Command indexWhenReady = Commands.sequence(
+            // Commands.waitUntil(() -> fuel.isAtSetpoint(100)),
             Commands.runOnce(() -> indexer.startShooterFeed(), indexer),
-            Commands.waitSeconds(0.5),
+            Commands.waitSeconds(1),
             Commands.runOnce(() -> indexer.stop(), indexer)
         );
 
-        joystick.rightTrigger(0.1).onTrue(
+        joystick.rightTrigger(0.1).whileTrue(
             Commands.sequence(
                 Commands.runOnce(() -> fuel.runUp(), fuel).
-                alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer)),
-                indexWhenReady
-            )
+                    alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer)),
+                Commands.waitSeconds(1.5),
+                indexWhenReady.repeatedly()
+            ).finallyDo(() -> {
+                indexer.stop();
+                fuel.stop();
+            })
         );
 
         joystick.y().onTrue(
@@ -132,7 +137,7 @@ public class RobotContainer {
         // );
 
 
-        // reset the field-centric heading on left bumper press
+        // reset the field-centric heading
         joystick.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
     }
 

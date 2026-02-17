@@ -71,7 +71,7 @@ public class FuelSubsystem extends SubsystemBase {
     }
 
     public void startHopperIntake() {
-        pid.setSetpoint(0.2 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        pid.setSetpoint(0.3 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
     }
 
     public void runUp() {
@@ -84,5 +84,20 @@ public class FuelSubsystem extends SubsystemBase {
 
     public void stop() {
         motor.stopMotor();
+    }
+
+    /**
+     * 
+     * @param tolerance The RPM error tolerance
+     * @return Returns true when motor is at its setpoint within a tolerance
+     */
+    public boolean isAtSetpoint(double tolerance) {
+        double currentVelocity = encoder.getVelocity();
+        double setpoint = pid.getSetpoint();
+        double error = Math.abs(currentVelocity - setpoint);
+        SmartDashboard.putNumber("curr vel", currentVelocity);
+        SmartDashboard.putNumber("setpoint vel", setpoint);
+        SmartDashboard.putNumber("error", error);
+        return error < tolerance;
     }
 }

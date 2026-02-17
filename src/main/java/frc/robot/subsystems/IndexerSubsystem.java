@@ -65,7 +65,7 @@ public class IndexerSubsystem extends SubsystemBase{
     }
 
     public void startHopperIntake() {
-        pid.setSetpoint(-0.6 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        pid.setSetpoint(-0.7 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
     }
 
     public void startShooterFeed() {

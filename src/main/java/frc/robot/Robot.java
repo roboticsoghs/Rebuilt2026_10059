@@ -47,6 +47,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("FuelSystem Overheat Warn", m_robotContainer.fuel.motor.getMotorTemperature() >= 50);
     SmartDashboard.putNumber("Indexer Motor Temp", m_robotContainer.indexer.motor.getMotorTemperature());
     SmartDashboard.putBoolean("Indexer Overheat Warn", m_robotContainer.indexer.motor.getMotorTemperature() >= 50);
+    SmartDashboard.putBoolean("Shooter Ready", m_robotContainer.fuel.isAtSetpoint(100));
   }
 
   @Override
