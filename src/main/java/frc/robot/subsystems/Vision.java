@@ -48,9 +48,9 @@ public class Vision extends SubsystemBase {
         yaw = camera[4];
         roll = camera[5];
 
-        // SmartDashboard.putNumber("LimelightX", x);
-        // SmartDashboard.putNumber("LimelightY", y);
-        // SmartDashboard.putNumber("LimelightZ", z);
+        SmartDashboard.putNumber("LimelightX", x);
+        SmartDashboard.putNumber("LimelightY", y);
+        SmartDashboard.putNumber("LimelightZ", z);
 
         // SmartDashboard.putNumber("Limelight Pitch", pitch);
         // SmartDashboard.putNumber("Limelight Yaw", yaw);
@@ -61,11 +61,11 @@ public class Vision extends SubsystemBase {
         // TODO:
         // auto routines during teleop
         //  - auto start INTAKE into HOPPER when TRENCH AprilTag detected
-        //  - auto aim and adjust distance using CHUTE AprilTags after joystick trigger
+        //  - auto aim and adjust distance using HUB AprilTags after joystick trigger
         //     - shooting must be manual
 
 
-        SmartDashboard.putNumber("Distance to chute", isChuteTag() ? getZ() : 0);
+        SmartDashboard.putNumber("Distance to Hub", isChuteTag() ? getZ() : 0);
         SmartDashboard.putBoolean("trench tag", isEntryTrenchTag());
     }
 
@@ -95,32 +95,37 @@ public class Vision extends SubsystemBase {
         return aprilTagId;
     }
 
-    public void faceAprilTag(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake) {
-        double xOffset = getX();
+    public void faceAprilTag(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxAngularRate) {
+        if (!isAprilTag()) return;
+        double xOffset = getX() - 0.1;
         double zOffset = getZ();
-        double theta = Math.atan(xOffset / zOffset);
+        double theta = Math.atan2(xOffset, zOffset);
         double error = 0 - theta;
+        error = error * 1.5;
 
         drivetrain.setControl(
-            drive.withRotationalRate(error)
+            drive.withRotationalRate(error * MaxAngularRate)
         );
     }
 
-    public void adjustDistance(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake) {
+    public void adjustDistance(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxSpeed, double target) {
+        if (!isAprilTag()) return;
         double distOffset = getZ();
-        double error = 4.75 - distOffset;
+        double error = target - distOffset;
+        double distToMove = -(error * MaxSpeed);
+
+        SmartDashboard.putNumber("dist error", distToMove);
 
         drivetrain.setControl(
-            drive.withVelocityY(error)
+            drive.withVelocityX(distToMove)
         );
     }
 
     public boolean isChuteTag() {
-        return getId() == 10 || getId() == 26 || getId() == 0; // 0 is test btw
+        return getId() == 10 || getId() == 26 || getId() == 7; // 7 is test
     }
 
     public boolean isEntryTrenchTag() {
-        return getId() == 28 || getId() == 23 || getId() == 7 || getId() == 12; // 0 is test btw
-        // return getId() == 7;
+        return getId() == 28 || getId() == 23 || getId() == 7 || getId() == 12;
     }
 }

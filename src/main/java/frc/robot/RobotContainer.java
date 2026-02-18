@@ -119,7 +119,16 @@ public class RobotContainer {
             }, indexer, fuel)
         );
 
-        Command defaultCommand = joystickCommand;
+        joystick.b().whileTrue(
+            Commands.parallel(
+                Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngularRate), vision),
+                Commands.run(() -> vision.adjustDistance(drivetrain, drive, brake, MaxSpeed, 1.75))
+            )
+        );
+
+        Command defaultCommand = Commands.parallel(
+            joystickCommand
+        );
         drivetrain.setDefaultCommand(defaultCommand);
 
         // Idle while the robot is disabled. This ensures the configured

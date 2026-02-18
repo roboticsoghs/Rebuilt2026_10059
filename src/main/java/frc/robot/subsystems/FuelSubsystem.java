@@ -25,7 +25,7 @@ public class FuelSubsystem extends SubsystemBase {
     public final RelativeEncoder encoder;
 
     private final double maxAccel = 2700;
-    private final int maxVel = 5500;
+    private final int maxVel = 6000;
     public final double allowedError = 0.05;
 
     private final double SmartVelocityP = 0.0002;
@@ -33,7 +33,7 @@ public class FuelSubsystem extends SubsystemBase {
     private final double SmartVelocityD = 0.2;
 
     private final double kS = 0.225; 
-    private final double kV = 8.0 / (maxVel * 0.9); // rpm/v
+    private final double kV = 8.0 / (maxVel * 0.9); // v/rpm
     private final double kA = 0;
 
     double encoderValue;

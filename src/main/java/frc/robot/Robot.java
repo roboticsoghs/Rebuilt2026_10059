@@ -8,6 +8,7 @@ import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.GenericHID.RumbleType;
@@ -44,10 +45,14 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Robot Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
   
     SmartDashboard.putNumber("FuelSubsystem Motor Temp", m_robotContainer.fuel.motor.getMotorTemperature());
-    SmartDashboard.putBoolean("FuelSystem Overheat Warn", m_robotContainer.fuel.motor.getMotorTemperature() >= 50);
+    SmartDashboard.putBoolean("FuelSystem Overheat Warn", m_robotContainer.fuel.motor.getMotorTemperature() >= 60);
     SmartDashboard.putNumber("Indexer Motor Temp", m_robotContainer.indexer.motor.getMotorTemperature());
-    SmartDashboard.putBoolean("Indexer Overheat Warn", m_robotContainer.indexer.motor.getMotorTemperature() >= 50);
+    SmartDashboard.putBoolean("Indexer Overheat Warn", m_robotContainer.indexer.motor.getMotorTemperature() >= 60);
     SmartDashboard.putBoolean("Shooter Ready", m_robotContainer.fuel.isAtSetpoint(100));
+    SmartDashboard.putBoolean("AimAssist Available", m_robotContainer.vision.isAprilTag() && m_robotContainer.vision.isChuteTag());
+
+    // Feed vision
+    // m_robotContainer.drivetrain.addVisionMeasurement(m_robotContainer.vision.getP, kDefaultPeriod);
   }
 
   @Override
@@ -101,28 +106,7 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {
-    // Command autointake = Commands.sequence(
-    //   Commands.runOnce(() -> {
-    //     m_robotContainer.fuel.startHopperIntake();
-    //     m_robotContainer.indexer.startHopperIntake();
-    //     isAutoIntakeRunning = true;
-    //   }),
-      // Commands.runOnce(() -> {
-      //   m_robotContainer.joystick.setRumble(RumbleType.kBothRumble, 1);
-      // }),
-    //   Commands.waitSeconds(5),
-    //   Commands.runOnce(() -> {
-    //     m_robotContainer.fuel.stop();
-    //     m_robotContainer.indexer.stop();
-    //     isAutoIntakeRunning = false;
-    //   })
-    // ).onlyIf(() -> (m_robotContainer.vision.isEntryTrenchTag() && !isAutoIntakeRunning));
-    // CommandScheduler.getInstance().schedule(autointake);
-    // Commands.run(() -> {
-    //     m_robotContainer.joystick.setRumble(RumbleType.kBothRumble, 0.5);
-    //   });
-  }
+  public void teleopPeriodic() {}
 
   @Override
   public void teleopExit() {}
