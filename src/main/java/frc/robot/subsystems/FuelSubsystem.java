@@ -74,8 +74,8 @@ public class FuelSubsystem extends SubsystemBase {
         pid.setSetpoint(0.3 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
     }
 
-    public void runUp() {
-        pid.setSetpoint(1.0 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+    public void runUp(double speed) {
+        pid.setSetpoint(speed * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
     }
 
     public void startGroundOuttake() {
@@ -99,5 +99,11 @@ public class FuelSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("setpoint vel", setpoint);
         SmartDashboard.putNumber("error", error);
         return error < tolerance;
+    }
+
+    public double calcSpeedByDistance(double dist) {
+        if (dist == 0) return 1.0;
+        double speed = (0.0451092 * Math.pow(dist, 2)) + (0.0925451 * dist) + (0.592346);
+        return speed;
     }
 }

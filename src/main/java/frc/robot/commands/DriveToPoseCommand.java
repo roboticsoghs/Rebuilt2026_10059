@@ -21,7 +21,7 @@ public class DriveToPoseCommand extends Command {
 
     private Pose2d targetPose;
 
-    private static final double allowedErrorPos = 0.05; // in meters
+    private static final double allowedErrorPos = 0.02; // in meters
     private static final double allowedErrorRot = Math.toRadians(2); // 5 degree tolerance
 
     private final double maxSpeed;

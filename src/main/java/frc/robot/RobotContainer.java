@@ -80,7 +80,6 @@ public class RobotContainer {
         Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
 
         Command indexWhenReady = Commands.sequence(
-            // Commands.waitUntil(() -> fuel.isAtSetpoint(100)),
             Commands.runOnce(() -> indexer.startShooterFeed(), indexer),
             Commands.waitSeconds(1),
             Commands.runOnce(() -> indexer.stop(), indexer)
@@ -88,7 +87,7 @@ public class RobotContainer {
 
         joystick.rightTrigger(0.1).whileTrue(
             Commands.sequence(
-                Commands.runOnce(() -> fuel.runUp(), fuel).
+                Commands.runOnce(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel, vision).
                     alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer)),
                 Commands.waitSeconds(1.5),
                 indexWhenReady.repeatedly()
@@ -96,6 +95,10 @@ public class RobotContainer {
                 indexer.stop();
                 fuel.stop();
             })
+        );
+
+        joystick.b().whileTrue(
+            Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngularRate), vision)
         );
 
         joystick.y().onTrue(
@@ -117,13 +120,6 @@ public class RobotContainer {
                 indexer.startHopperIntake();
                 fuel.startHopperIntake();
             }, indexer, fuel)
-        );
-
-        joystick.b().whileTrue(
-            Commands.parallel(
-                Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngularRate), vision),
-                Commands.run(() -> vision.adjustDistance(drivetrain, drive, brake, MaxSpeed, 1.75))
-            )
         );
 
         Command defaultCommand = Commands.parallel(

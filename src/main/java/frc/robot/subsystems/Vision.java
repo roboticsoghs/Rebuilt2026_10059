@@ -108,6 +108,16 @@ public class Vision extends SubsystemBase {
         );
     }
 
+    public boolean isFacingAprilTag() {
+        double xOffset = getX() - 0.1;
+        double zOffset = getZ();
+        double theta = Math.atan2(xOffset, zOffset);
+        double error = 0 - theta;
+        error = error * 1.5;
+
+        return Math.abs(error) < 0.1;
+    }
+
     public void adjustDistance(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxSpeed, double target) {
         if (!isAprilTag()) return;
         double distOffset = getZ();
