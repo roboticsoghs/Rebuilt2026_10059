@@ -89,7 +89,7 @@ public class RobotContainer {
             Commands.sequence(
                 Commands.runOnce(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel, vision).
                     alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer)),
-                Commands.waitSeconds(1.5),
+                Commands.waitSeconds(1.3),
                 indexWhenReady.repeatedly()
             ).finallyDo(() -> {
                 indexer.stop();
@@ -115,10 +115,17 @@ public class RobotContainer {
             }, indexer, fuel)
         );
 
-        joystick.leftTrigger(0.1).onTrue(
+        joystick.leftTrigger(0.1).whileTrue(
             Commands.runOnce(() -> {
                 indexer.startHopperIntake();
                 fuel.startHopperIntake();
+            }, indexer, fuel)
+        );
+
+        joystick.leftTrigger().whileFalse(
+            Commands.runOnce(() -> {
+                indexer.stop();
+                fuel.stop();
             }, indexer, fuel)
         );
 
