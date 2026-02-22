@@ -139,14 +139,6 @@ public class RobotContainer {
             drivetrain.applyRequest(() -> idle).ignoringDisable(true)
         );
 
-        // joystick.povUp().onTrue(
-        //     Commands.runOnce(() -> autoAngleActive = !autoAngleActive, vision)
-        // );
-        // joystick.povDown().whileTrue(
-        //     Commands.run(() -> vision.adjustDistance(drivetrain, drive, brake))
-        // );
-
-
         // reset the field-centric heading
         joystick.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
     }
