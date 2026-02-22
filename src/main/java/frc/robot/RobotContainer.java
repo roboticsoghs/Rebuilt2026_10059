@@ -76,9 +76,6 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // Note that X is defined as forward according to WPILib convention,
-        // and Y is defined as to the left according to WPILib convention.
-
         Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
 
         joystick.rightTrigger(0.1).whileTrue(
@@ -95,7 +92,7 @@ public class RobotContainer {
 
         joystick.b().onTrue(
             Commands.sequence(
-                Commands.runOnce(() -> AngleAssist = !AngleAssist),
+                Commands.runOnce(() -> AngleAssist = !AngleAssist), // toggle AngleAssist
                 Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngularRate), vision)
                     .repeatedly()
                     .onlyIf(() -> AngleAssist)
