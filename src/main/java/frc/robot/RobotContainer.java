@@ -52,6 +52,8 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
     private final SendableChooser<Integer> autoDelaySelector = new SendableChooser<>();
 
+    private boolean AngleAssist = false;
+
     public RobotContainer() {
         configureBindings();
         configureAutos();
@@ -79,26 +81,25 @@ public class RobotContainer {
 
         Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
 
-        Command indexWhenReady = Commands.sequence(
-            Commands.runOnce(() -> indexer.startShooterFeed(), indexer),
-            Commands.waitSeconds(1),
-            Commands.runOnce(() -> indexer.stop(), indexer)
-        );
-
         joystick.rightTrigger(0.1).whileTrue(
             Commands.sequence(
                 Commands.runOnce(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel, vision).
                     alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer)),
-                Commands.waitSeconds(1.3),
-                indexWhenReady.repeatedly()
+                Commands.waitSeconds(1.0),
+                Commands.runOnce(() -> indexer.startShooterFeed(), indexer).repeatedly()
             ).finallyDo(() -> {
                 indexer.stop();
                 fuel.stop();
             })
         );
 
-        joystick.b().whileTrue(
-            Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngularRate), vision)
+        joystick.b().onTrue(
+            Commands.sequence(
+                Commands.runOnce(() -> AngleAssist = !AngleAssist),
+                Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngularRate), vision)
+                    .repeatedly()
+                    .onlyIf(() -> AngleAssist)
+            )
         );
 
         joystick.y().onTrue(
