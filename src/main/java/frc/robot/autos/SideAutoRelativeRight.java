@@ -12,8 +12,8 @@ import frc.robot.subsystems.FuelSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.Vision;
 
-public class EightPieceAutoFromCenter extends SequentialCommandGroup {
-    public EightPieceAutoFromCenter(
+public class SideAutoRelativeRight extends SequentialCommandGroup {
+    public SideAutoRelativeRight(
         CommandSwerveDrivetrain drivetrain,
         SwerveRequest.FieldCentric drive,
         SwerveRequest.SwerveDriveBrake brake,
@@ -24,25 +24,22 @@ public class EightPieceAutoFromCenter extends SequentialCommandGroup {
         double MaxAngRate
     ) {
         addCommands(
-            drivetrain.applyRequest(() -> drive.withVelocityX(0.5 * MaxSpeed))
-                .until(() -> vision.isAnyAllianceHubFront())
-                .withTimeout(1),
+            drivetrain.applyRequest(() -> drive.withRotationalRate(0.3 * MaxAngRate))
+                .until(() -> vision.isAnyAllianceHubAnySide())
+                .withTimeout(2),
             drivetrain.applyRequest(() -> brake).withTimeout(0.1),
+            drivetrain.applyRequest(() -> drive.withRotationalRate(0)).withTimeout(0.1),
             Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
-                .until(() -> vision.isFacingAprilTag(0))
-                .finallyDo(() -> drivetrain.setControl(brake)),
+                .until(() -> vision.isFacingAprilTag(-225.0))
+                .onlyIf(() -> vision.isAprilTag())
+                .finallyDo(() -> drivetrain.setControl(brake))
+                .withTimeout(0.5),
             Commands.parallel(
-                Commands.runOnce(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), vision, fuel),
+                Commands.runOnce(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ()) - 0.05), vision, fuel),
                 Commands.runOnce(() -> indexer.startHopperIntake(), indexer),
                 Commands.waitSeconds(1.5)
             ),
-            Commands.runOnce(() -> indexer.startShooterFeed(), indexer).repeatedly().withTimeout(17),
-            Commands.parallel(
-                Commands.runOnce(() -> {
-                    fuel.stop();
-                    indexer.stop();
-                }, fuel, indexer)
-            )
+            Commands.runOnce(() -> indexer.startShooterFeed(), indexer).repeatedly()
         );
     }
 }

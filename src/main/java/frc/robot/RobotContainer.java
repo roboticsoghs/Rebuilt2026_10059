@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.autos.EightPieceAutoFromCenter;
 import frc.robot.autos.Nothing;
 import frc.robot.autos.OneMeterSquare;
+import frc.robot.autos.SideAutoRelativeLeft;
+import frc.robot.autos.SideAutoRelativeRight;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.FuelSubsystem;
@@ -62,6 +64,8 @@ public class RobotContainer {
     private void configureAutos() {
         autoChooser.setDefaultOption("NOTHING", new Nothing());
         autoChooser.addOption("8P-CENTER", new EightPieceAutoFromCenter(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
+        autoChooser.addOption("8P-LEFTREL", new SideAutoRelativeLeft(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
+        autoChooser.addOption("8P-RIGHTREL", new SideAutoRelativeRight(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
         autoChooser.addOption("OneMeterSquare", new OneMeterSquare(drivetrain, drive, brake, MaxSpeed, MaxAngularRate));
 
         autoDelaySelector.setDefaultOption("No delay", 0);

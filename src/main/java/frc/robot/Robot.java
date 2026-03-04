@@ -49,10 +49,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Indexer Motor Temp", m_robotContainer.indexer.motor.getMotorTemperature());
     SmartDashboard.putBoolean("Indexer Overheat Warn", m_robotContainer.indexer.motor.getMotorTemperature() >= 60);
     SmartDashboard.putBoolean("Shooter Ready", m_robotContainer.fuel.isAtSetpoint(100));
-    SmartDashboard.putBoolean("AimAssist Available", m_robotContainer.vision.isAprilTag() && m_robotContainer.vision.isChuteTag());
-
-    // Feed vision
-    // m_robotContainer.drivetrain.addVisionMeasurement(m_robotContainer.vision.getP, kDefaultPeriod);
+    SmartDashboard.putBoolean("AimAssist Available", m_robotContainer.vision.isAprilTag() && (m_robotContainer.vision.isAnyAllianceHubFront() || m_robotContainer.vision.isAnyAllianceHubAnySide()));
   }
 
   @Override
@@ -94,15 +91,13 @@ public class Robot extends TimedRobot {
 
   @Override
   public void teleopInit() {
+    m_robotContainer.fuel.stop();
+    m_robotContainer.indexer.stop();
     SmartDashboard.putBoolean("TELEOP READY", true);
 
     if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
-    // Commands.run(() -> m_robotContainer.indexer.startHopperIntake(), m_robotContainer.indexer).onlyIf(() -> m_robotContainer.vision.isEntryTrenchTag()).repeatedly();
-    //m_robotContainer.indexer.startHopperIntake()
-
-    
   }
 
   @Override

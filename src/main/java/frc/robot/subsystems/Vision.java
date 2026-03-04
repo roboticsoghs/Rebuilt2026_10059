@@ -4,9 +4,12 @@ import org.opencv.photo.AlignMTB;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -26,6 +29,9 @@ public class Vision extends SubsystemBase {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry cameraPose = table.getEntry("targetpose_cameraspace");
 
+    Pose2d botpose;
+    double timestamp;
+
     // Initializing da alignState and aprilTagId
     public Vision() {
         aprilTagId = -1;
@@ -35,10 +41,8 @@ public class Vision extends SubsystemBase {
     public void periodic(){
         // tis method gets called every scheduler run
         // read da value periodically
-        double[] defaultValue = {0,0,0,0,0,0};
-        camera = cameraPose.getDoubleArray(defaultValue);
-        long defaultValueId = -1;
-        aprilTagId = table.getEntry("tid").getInteger(defaultValueId);
+        camera = cameraPose.getDoubleArray(new double[6]);
+        aprilTagId = table.getEntry("tid").getInteger(-1);
 
         // limelight 3d offset
         x = camera[0];
@@ -48,26 +52,52 @@ public class Vision extends SubsystemBase {
         yaw = camera[4];
         roll = camera[5];
 
-        SmartDashboard.putNumber("LimelightX", x);
-        SmartDashboard.putNumber("LimelightY", y);
-        SmartDashboard.putNumber("LimelightZ", z);
-
+        // SmartDashboard.putNumber("LimelightX", x);
+        // SmartDashboard.putNumber("LimelightY", y);
+        // SmartDashboard.putNumber("LimelightZ", z);
         // SmartDashboard.putNumber("Limelight Pitch", pitch);
         // SmartDashboard.putNumber("Limelight Yaw", yaw);
         // SmartDashboard.putNumber("Limelight Roll", roll);
 
         SmartDashboard.putNumber("AprilTag ID", aprilTagId);
-
-        // TODO:
-        // auto routines during teleop
-        //  - auto start INTAKE into HOPPER when TRENCH AprilTag detected
-        //  - auto aim and adjust distance using HUB AprilTags after joystick trigger
-        //     - shooting must be manual
-
-
-        SmartDashboard.putNumber("Distance to Hub", isChuteTag() ? getZ() : 0);
-        SmartDashboard.putBoolean("trench tag", isEntryTrenchTag());
+        SmartDashboard.putNumber("Distance to Hub", isAnyAllianceHubFront() ? getZ() : isAnyAllianceHubAnySide() ? getZ() : 0);
+    
+        double[] pose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[0]);
+        if (pose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
+            botpose = new Pose2d(pose[0], pose[1], Rotation2d.fromDegrees(pose[5]));
+            timestamp = Timer.getFPGATimestamp() - (pose[6] / 1000.0);
+        }
     }
+
+    public Pose2d getPose() {
+        return botpose;
+    }
+
+    public double getTimestamp() {
+        return timestamp;
+    }
+
+    // Add these imports
+// import edu.wpi.first.math.geometry.Pose2d;
+// import edu.wpi.first.math.geometry.Rotation2d;
+// import edu.wpi.first.wpilibj.Timer;
+
+// // Inside Vision class periodic()
+// public void periodic() {
+//     // botpose_wpiblue: [x, y, z, roll, pitch, yaw, totalLatency, tagCount, tagSpan, avgTagDist, avgTagArea]
+//     double[] botpose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[0]);
+
+//     if (botpose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
+//         Pose2d pose = new Pose2d(botpose[0], botpose[1], Rotation2d.fromDegrees(botpose[5]));
+        
+//         // Calculate timestamp: Current time minus total latency (converted to seconds)
+//         double timestamp = Timer.getFPGATimestamp() - (botpose[6] / 1000.0);
+        
+//         // Feed to drivetrain (assuming you pass drivetrain into Vision or use a static reference)
+//         RobotContainer.drivetrain.addVisionMeasurement(pose, timestamp);
+//     }
+// }
+
 
     // get values relative to april tag
     public boolean isAprilTag(){
@@ -108,10 +138,10 @@ public class Vision extends SubsystemBase {
         );
     }
 
-    public boolean isFacingAprilTag() {
+    public boolean isFacingAprilTag(double additionalOffset) {
         double xOffset = getX() - 0.1;
         double zOffset = getZ();
-        double theta = Math.atan2(xOffset, zOffset);
+        double theta = Math.atan2(xOffset, zOffset) + additionalOffset;
         double error = 0 - theta;
         error = error * 1.5;
 
@@ -131,11 +161,11 @@ public class Vision extends SubsystemBase {
         );
     }
 
-    public boolean isChuteTag() {
-        return getId() == 10 || getId() == 26 || getId() == 7; // 7 is test
+    public boolean isAnyAllianceHubFront() {
+        return getId() == 10 || getId() == 26 || getId() == 7; // temp: 7
     }
 
-    public boolean isEntryTrenchTag() {
-        return getId() == 28 || getId() == 23 || getId() == 7 || getId() == 12;
+    public boolean isAnyAllianceHubAnySide() {
+        return getId() == 2 || getId() == 18 || getId() == 21 || getId() == 5 || getId() == 7; //temp: 7
     }
 }
