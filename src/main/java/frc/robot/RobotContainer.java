@@ -94,13 +94,14 @@ public class RobotContainer {
             })
         );
 
-        joystick.b().onTrue(
-            Commands.sequence(
-                Commands.runOnce(() -> AngleAssist = !AngleAssist), // toggle AngleAssist
+        joystick.b().whileTrue(
+            // Commands.sequence(
+                // Commands.runOnce(() -> AngleAssist = !AngleAssist), // toggle AngleAssist
                 Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngularRate), vision)
-                    .repeatedly()
-                    .onlyIf(() -> AngleAssist)
-            )
+                    .onlyIf(() -> vision.isAnyAllianceHubFront() || vision.isAnyAllianceHubAnySide())
+                    // .repeatedly()
+                    // .onlyIf(() -> AngleAssist)
+            // )
         );
 
         joystick.y().onTrue(

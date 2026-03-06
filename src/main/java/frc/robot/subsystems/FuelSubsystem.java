@@ -104,6 +104,8 @@ public class FuelSubsystem extends SubsystemBase {
     public double calcSpeedByDistance(double dist) {
         if (dist == 0) return 1.0;
         double speed = (0.0451092 * Math.pow(dist, 2)) + (0.0925451 * dist) + (0.592346);
+        speed = speed * 0.95;
+        SmartDashboard.putNumber("auto speed", speed);
         return speed;
     }
 }

@@ -125,27 +125,34 @@ public class Vision extends SubsystemBase {
         return aprilTagId;
     }
 
-    public void faceAprilTag(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxAngularRate) {
-        if (!isAprilTag()) return;
-        double xOffset = getX() - 0.1;
-        double zOffset = getZ();
+    public double calculateAprilTagError(double x, double z) {
+        if (!isAprilTag()) return 0;
+
+        double xOffset = x - 0.1;
+        double zOffset = z;
         double theta = Math.atan2(xOffset, zOffset);
+        theta = theta + Math.signum(theta) * Math.toRadians(7.5);
         double error = 0 - theta;
         error = error * 1.5;
+
+        SmartDashboard.putNumber("angle error", error);
+
+        return error;
+    }
+
+    public void faceAprilTag(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxAngularRate) {
+        if (!isAprilTag()) return;
+        double error = calculateAprilTagError(getX(), getZ());
 
         drivetrain.setControl(
             drive.withRotationalRate(error * MaxAngularRate)
         );
     }
 
-    public boolean isFacingAprilTag(double additionalOffset) {
-        double xOffset = getX() - 0.1;
-        double zOffset = getZ();
-        double theta = Math.atan2(xOffset, zOffset) + additionalOffset;
-        double error = 0 - theta;
-        error = error * 1.5;
+    public boolean isFacingAprilTag() {
+        double error = calculateAprilTagError(getX(), getZ());
 
-        return Math.abs(error) < 0.1;
+        return Math.abs(error) < 0.075;
     }
 
     public void adjustDistance(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxSpeed, double target) {
@@ -162,7 +169,7 @@ public class Vision extends SubsystemBase {
     }
 
     public boolean isAnyAllianceHubFront() {
-        return getId() == 10 || getId() == 26 || getId() == 7; // temp: 7
+        return getId() == 10 || getId() == 26 || getId() == 0; // temp: 0
     }
 
     public boolean isAnyAllianceHubAnySide() {

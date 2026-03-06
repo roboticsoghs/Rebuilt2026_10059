@@ -29,7 +29,7 @@ public class EightPieceAutoFromCenter extends SequentialCommandGroup {
                 .withTimeout(1),
             drivetrain.applyRequest(() -> brake).withTimeout(0.1),
             Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
-                .until(() -> vision.isFacingAprilTag(0))
+                .until(() -> vision.isFacingAprilTag())
                 .finallyDo(() -> drivetrain.setControl(brake)),
             Commands.parallel(
                 Commands.runOnce(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), vision, fuel),
