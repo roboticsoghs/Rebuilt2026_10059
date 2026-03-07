@@ -125,13 +125,13 @@ public class Vision extends SubsystemBase {
         return aprilTagId;
     }
 
-    public double calculateAprilTagError(double x, double z) {
+    public double calculateAprilTagError(double x, double z, double extraAngleDegrees) {
         if (!isAprilTag()) return 0;
 
         double xOffset = x - 0.1;
         double zOffset = z;
         double theta = Math.atan2(xOffset, zOffset);
-        theta = theta + Math.signum(theta) * Math.toRadians(7.5);
+        theta = theta + Math.signum(theta) * Math.toRadians(6 + extraAngleDegrees);
         double error = 0 - theta;
         error = error * 1.5;
 
@@ -140,9 +140,9 @@ public class Vision extends SubsystemBase {
         return error;
     }
 
-    public void faceAprilTag(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxAngularRate) {
+    public void faceAprilTag(double extraAngleDegrees, CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxAngularRate) {
         if (!isAprilTag()) return;
-        double error = calculateAprilTagError(getX(), getZ());
+        double error = calculateAprilTagError(getX(), getZ(), extraAngleDegrees);
 
         drivetrain.setControl(
             drive.withRotationalRate(error * MaxAngularRate)
@@ -150,7 +150,7 @@ public class Vision extends SubsystemBase {
     }
 
     public boolean isFacingAprilTag() {
-        double error = calculateAprilTagError(getX(), getZ());
+        double error = calculateAprilTagError(getX(), getZ(), 0);
 
         return Math.abs(error) < 0.075;
     }
@@ -169,10 +169,10 @@ public class Vision extends SubsystemBase {
     }
 
     public boolean isAnyAllianceHubFront() {
-        return getId() == 10 || getId() == 26 || getId() == 0; // temp: 0
+        return getId() == 10 || getId() == 26;
     }
 
     public boolean isAnyAllianceHubAnySide() {
-        return getId() == 2 || getId() == 18 || getId() == 21 || getId() == 5 || getId() == 7; //temp: 7
+        return getId() == 2 || getId() == 18 || getId() == 21 || getId() == 5;
     }
 }

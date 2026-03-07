@@ -26,13 +26,14 @@ public class EightPieceAutoFromCenter extends SequentialCommandGroup {
         addCommands(
             drivetrain.applyRequest(() -> drive.withVelocityX(0.5 * MaxSpeed))
                 .until(() -> vision.isAnyAllianceHubFront())
-                .withTimeout(1),
+                .withTimeout(0.3),
             drivetrain.applyRequest(() -> brake).withTimeout(0.1),
-            Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
+            Commands.run(() -> vision.faceAprilTag(-6, drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
                 .until(() -> vision.isFacingAprilTag())
-                .finallyDo(() -> drivetrain.setControl(brake)),
+                .finallyDo(() -> drivetrain.setControl(brake))
+                .withTimeout(1),
             Commands.parallel(
-                Commands.runOnce(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), vision, fuel),
+                Commands.runOnce(() -> fuel.runUp(0.72), vision, fuel),
                 Commands.runOnce(() -> indexer.startHopperIntake(), indexer),
                 Commands.waitSeconds(1.5)
             ),

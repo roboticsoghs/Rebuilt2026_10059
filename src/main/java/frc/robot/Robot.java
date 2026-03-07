@@ -26,8 +26,6 @@ public class Robot extends TimedRobot {
 
   private final RobotContainer m_robotContainer;
   
-  private boolean isAutoIntakeRunning = false;
-
   public Robot() {
     m_robotContainer = new RobotContainer();
   }
@@ -52,8 +50,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("AimAssist Available", m_robotContainer.vision.isAprilTag() && (m_robotContainer.vision.isAnyAllianceHubFront() || m_robotContainer.vision.isAnyAllianceHubAnySide()));
   }
 
-  @Override
-  public void robotInit() {
+  @Override  public void robotInit() {
     System.out.println("Robot Initialized");
   }
 

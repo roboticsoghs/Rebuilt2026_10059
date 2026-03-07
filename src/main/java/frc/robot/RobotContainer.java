@@ -54,7 +54,7 @@ public class RobotContainer {
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
     private final SendableChooser<Integer> autoDelaySelector = new SendableChooser<>();
 
-    private boolean AngleAssist = false;
+    // private boolean AngleAssist = false;
 
     public RobotContainer() {
         configureBindings();
@@ -84,7 +84,7 @@ public class RobotContainer {
 
         joystick.rightTrigger(0.1).whileTrue(
             Commands.sequence(
-                Commands.runOnce(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel, vision).
+                Commands.runOnce(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ()) + 0.02), fuel, vision).
                     alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer)),
                 Commands.waitSeconds(1.0),
                 Commands.runOnce(() -> indexer.startShooterFeed(), indexer).repeatedly()
@@ -97,7 +97,7 @@ public class RobotContainer {
         joystick.b().whileTrue(
             // Commands.sequence(
                 // Commands.runOnce(() -> AngleAssist = !AngleAssist), // toggle AngleAssist
-                Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngularRate), vision)
+                Commands.run(() -> vision.faceAprilTag(0, drivetrain, drive, brake, MaxAngularRate), vision)
                     .onlyIf(() -> vision.isAnyAllianceHubFront() || vision.isAnyAllianceHubAnySide())
                     // .repeatedly()
                     // .onlyIf(() -> AngleAssist)
