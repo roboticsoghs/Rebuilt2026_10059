@@ -26,7 +26,7 @@ public class SideAutoRelativeLeft extends SequentialCommandGroup {
         addCommands(
             drivetrain.applyRequest(() -> drive.withRotationalRate(-0.3 * MaxAngRate))
                 .until(() -> vision.isAnyAllianceHubAnySide())
-                .withTimeout(0.2),
+                .withTimeout(0.75),
             drivetrain.applyRequest(() -> brake).withTimeout(0.1),
             drivetrain.applyRequest(() -> drive.withRotationalRate(0)).withTimeout(0.1),
             Commands.run(() -> vision.faceAprilTag(-14, drivetrain, drive, brake, MaxAngRate), vision, drivetrain)

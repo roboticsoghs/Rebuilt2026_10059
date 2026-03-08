@@ -24,9 +24,9 @@ public class EightPieceAutoFromCenter extends SequentialCommandGroup {
         double MaxAngRate
     ) {
         addCommands(
-            drivetrain.applyRequest(() -> drive.withVelocityX(0.5 * MaxSpeed))
+            drivetrain.applyRequest(() -> drive.withVelocityX(-0.5 * MaxSpeed))
                 .until(() -> vision.isAnyAllianceHubFront())
-                .withTimeout(0.3),
+                .withTimeout(0.6),
             drivetrain.applyRequest(() -> brake).withTimeout(0.1),
             Commands.run(() -> vision.faceAprilTag(-6, drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
                 .until(() -> vision.isFacingAprilTag())
