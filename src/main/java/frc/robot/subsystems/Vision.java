@@ -125,13 +125,13 @@ public class Vision extends SubsystemBase {
         return aprilTagId;
     }
 
-    public double calculateAprilTagError(double x, double z, double extraAngleDegrees) {
+    public double calculateAprilTagError(double x, double z) {
         if (!isAprilTag()) return 0;
 
         double xOffset = x - 0.1;
         double zOffset = z;
         double theta = Math.atan2(xOffset, zOffset);
-        theta = theta + Math.signum(theta) * Math.toRadians(6 + extraAngleDegrees);
+        theta = theta + Math.signum(theta) * Math.toRadians(6);
         double error = 0 - theta;
         error = error * 1.5;
 
@@ -140,9 +140,9 @@ public class Vision extends SubsystemBase {
         return error;
     }
 
-    public void faceAprilTag(double extraAngleDegrees, CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxAngularRate) {
+    public void faceAprilTag(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxAngularRate) {
         if (!isAprilTag()) return;
-        double error = calculateAprilTagError(getX(), getZ(), extraAngleDegrees);
+        double error = calculateAprilTagError(getX(), getZ());
 
         drivetrain.setControl(
             drive.withRotationalRate(error * MaxAngularRate)
@@ -150,7 +150,7 @@ public class Vision extends SubsystemBase {
     }
 
     public boolean isFacingAprilTag() {
-        double error = calculateAprilTagError(getX(), getZ(), 0);
+        double error = calculateAprilTagError(getX(), getZ());
 
         return Math.abs(error) < 0.075;
     }

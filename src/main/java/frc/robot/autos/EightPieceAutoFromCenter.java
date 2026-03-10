@@ -2,6 +2,8 @@ package frc.robot.autos;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
@@ -23,15 +25,16 @@ public class EightPieceAutoFromCenter extends SequentialCommandGroup {
         double MaxSpeed,
         double MaxAngRate
     ) {
+        double allianceSign = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? -1 : 1;
         addCommands(
-            drivetrain.applyRequest(() -> drive.withVelocityX(-0.5 * MaxSpeed))
+            drivetrain.applyRequest(() -> drive.withVelocityX(0.5 * MaxSpeed * allianceSign))
                 .until(() -> vision.isAnyAllianceHubFront())
-                .withTimeout(0.6),
+                .withTimeout(0.4),
             drivetrain.applyRequest(() -> brake).withTimeout(0.1),
-            Commands.run(() -> vision.faceAprilTag(-6, drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
+            Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
                 .until(() -> vision.isFacingAprilTag())
                 .finallyDo(() -> drivetrain.setControl(brake))
-                .withTimeout(1),
+                .withTimeout(0.75),
             Commands.parallel(
                 Commands.runOnce(() -> fuel.runUp(0.72), vision, fuel),
                 Commands.runOnce(() -> indexer.startHopperIntake(), indexer),

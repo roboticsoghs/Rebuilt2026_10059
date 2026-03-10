@@ -29,7 +29,7 @@ public class SideAutoRelativeRight extends SequentialCommandGroup {
                 .withTimeout(0.75),
             drivetrain.applyRequest(() -> brake).withTimeout(0.1),
             drivetrain.applyRequest(() -> drive.withRotationalRate(0)).withTimeout(0.1),
-            Commands.run(() -> vision.faceAprilTag(8, drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
+            Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
                 .until(() -> vision.isFacingAprilTag())
                 .onlyIf(() -> vision.isAprilTag())
                 .finallyDo(() -> drivetrain.setControl(brake))

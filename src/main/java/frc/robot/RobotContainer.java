@@ -97,7 +97,7 @@ public class RobotContainer {
         joystick.b().whileTrue(
             // Commands.sequence(
                 // Commands.runOnce(() -> AngleAssist = !AngleAssist), // toggle AngleAssist
-                Commands.run(() -> vision.faceAprilTag(0, drivetrain, drive, brake, MaxAngularRate), vision)
+                Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngularRate), vision)
                     .onlyIf(() -> vision.isAnyAllianceHubFront() || vision.isAnyAllianceHubAnySide())
                     // .repeatedly()
                     // .onlyIf(() -> AngleAssist)
