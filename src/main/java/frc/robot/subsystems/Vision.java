@@ -12,7 +12,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class Vision extends SubsystemBase {
-    // limelight variables and stuff
+    private final CommandSwerveDrivetrain drivetrain;
+
     private double x;
     private double y;
     private double z;
@@ -25,18 +26,14 @@ public class Vision extends SubsystemBase {
     NetworkTable table = NetworkTableInstance.getDefault().getTable("limelight");
     NetworkTableEntry cameraPose = table.getEntry("targetpose_cameraspace");
 
-    Pose2d botpose;
-    double timestamp;
-
-    // Initializing da alignState and aprilTagId
-    public Vision() {
+    // Initializing aprilTagId
+    public Vision(CommandSwerveDrivetrain drivetrain) {
+        this.drivetrain = drivetrain;
         aprilTagId = -1;
     }
 
     @Override
     public void periodic(){
-        // tis method gets called every scheduler run
-        // read da value periodically
         camera = cameraPose.getDoubleArray(new double[6]);
         aprilTagId = table.getEntry("tid").getInteger(-1);
 
@@ -60,40 +57,12 @@ public class Vision extends SubsystemBase {
 
         double[] pose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[0]);
         if (pose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
-            botpose = new Pose2d(pose[0], pose[1], Rotation2d.fromDegrees(pose[5]));
-            timestamp = Timer.getFPGATimestamp() - (pose[6] / 1000.0);
+            Pose2d visionPose = new Pose2d(pose[0], pose[1], Rotation2d.fromDegrees(pose[5]));
+            double timestamp = Timer.getFPGATimestamp() - (pose[6] / 1000.0);
+
+            drivetrain.addVisionMeasurement(visionPose, timestamp);
         }
     }
-
-    public Pose2d getPose() {
-        return botpose;
-    }
-
-    public double getTimestamp() {
-        return timestamp;
-    }
-
-    // Add these imports
-// import edu.wpi.first.math.geometry.Pose2d;
-// import edu.wpi.first.math.geometry.Rotation2d;
-// import edu.wpi.first.wpilibj.Timer;
-
-// // Inside Vision class periodic()
-// public void periodic() {
-//     // botpose_wpiblue: [x, y, z, roll, pitch, yaw, totalLatency, tagCount, tagSpan, avgTagDist, avgTagArea]
-//     double[] botpose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[0]);
-
-//     if (botpose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
-//         Pose2d pose = new Pose2d(botpose[0], botpose[1], Rotation2d.fromDegrees(botpose[5]));
-
-//         // Calculate timestamp: Current time minus total latency (converted to seconds)
-//         double timestamp = Timer.getFPGATimestamp() - (botpose[6] / 1000.0);
-
-//         // Feed to drivetrain (assuming you pass drivetrain into Vision or use a static reference)
-//         RobotContainer.drivetrain.addVisionMeasurement(pose, timestamp);
-//     }
-// }
-
 
     // get values relative to april tag
     public boolean isAprilTag(){

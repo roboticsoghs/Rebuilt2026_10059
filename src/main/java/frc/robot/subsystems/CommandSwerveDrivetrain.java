@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import static edu.wpi.first.units.Units.*;
-
 import java.util.function.Supplier;
 
 import com.ctre.phoenix6.SignalLogger;
@@ -15,17 +13,17 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.numbers.N1;
 import edu.wpi.first.math.numbers.N3;
+import static edu.wpi.first.units.Units.Second;
+import static edu.wpi.first.units.Units.Volts;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.DriverStation.Alliance;
-import edu.wpi.first.wpilibj.smartdashboard.Field2d;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.Notifier;
 import edu.wpi.first.wpilibj.RobotController;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
-import frc.robot.RobotContainer;
 import frc.robot.generated.TunerConstants.TunerSwerveDrivetrain;
 
 /**
@@ -296,8 +294,6 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
     }
 
     public Pose2d getPose() {
-        //System.out.println(this.getState().Pose);
-        SmartDashboard.putString("Robot pos yes: ", this.getState().Pose.toString());
         return this.getState().Pose;
     }
 
@@ -312,15 +308,13 @@ public class CommandSwerveDrivetrain extends TunerSwerveDrivetrain implements Su
         double dy = targetPose.getY() - current.getY();
         double dr = targetPose.getRotation().getRadians() - current.getRotation().getRadians();
         double distance = Math.hypot(dx, dy);
-        SmartDashboard.putNumber("dist", distance);
-        // if (dr < )
         if (distance < 0.05) {
-            return null; // close enough, we can brake
+            return new double[]{0,0,0};
         }
-    
+
         double vx = dx / distance;
         double vy = dy / distance;
-    
-        return new double[]{vx, vy, dr}; // just return the velocities
+
+        return new double[]{vx, vy, dr};
     }
 }

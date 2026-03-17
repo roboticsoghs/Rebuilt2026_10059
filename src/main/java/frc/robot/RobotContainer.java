@@ -7,9 +7,11 @@ package frc.robot;
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -42,7 +44,7 @@ public class RobotContainer {
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
     public final IndexerSubsystem indexer = new IndexerSubsystem();
     public final FuelSubsystem fuel = new FuelSubsystem();
-    public final Vision vision = new Vision();
+    public final Vision vision = new Vision(drivetrain);
 
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
     private final SendableChooser<Integer> autoDelaySelector = new SendableChooser<>();
@@ -137,7 +139,17 @@ public class RobotContainer {
     }
 
     public Command getAutonomousCommand() {
+        Command seedHeading = Commands.runOnce(() -> {
+            DriverStation.Alliance alliance = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue);
+            if (alliance == DriverStation.Alliance.Red) {
+                drivetrain.seedFieldCentric(Rotation2d.fromDegrees(180));
+            } else {
+                drivetrain.seedFieldCentric(Rotation2d.fromDegrees(0));
+            }
+        });
+
         return Commands.sequence(
+            seedHeading,
             Commands.waitSeconds(autoDelaySelector.getSelected()),
             autoChooser.getSelected()
         );

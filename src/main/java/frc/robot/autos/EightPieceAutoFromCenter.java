@@ -2,13 +2,8 @@ package frc.robot.autos;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.wpilibj.DriverStation;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.DriveDistance;
-import frc.robot.commands.DriveToPoseCommand;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.FuelSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
@@ -25,9 +20,8 @@ public class EightPieceAutoFromCenter extends SequentialCommandGroup {
         double MaxSpeed,
         double MaxAngRate
     ) {
-        double allianceSign = DriverStation.getAlliance().orElse(DriverStation.Alliance.Blue) == DriverStation.Alliance.Red ? -1 : 1;
         addCommands(
-            drivetrain.applyRequest(() -> drive.withVelocityX(0.5 * MaxSpeed * allianceSign))
+            drivetrain.applyRequest(() -> drive.withVelocityX(-0.5 * MaxSpeed))
                 .until(() -> vision.isAnyAllianceHubFront())
                 .withTimeout(0.4),
             drivetrain.applyRequest(() -> brake).withTimeout(0.1),
