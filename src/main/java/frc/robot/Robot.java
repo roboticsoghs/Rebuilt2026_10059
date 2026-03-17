@@ -6,12 +6,22 @@ package frc.robot;
 
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
+
+  // teleop times
+  private static final double TRANSITION_PERIOD = 10.0;
+  private static final double ACTIVE_SHIFT = 25.0;
+  private static final double ENDGAME_PERIOD = 30.0;
+
+  private static final double[] phaseDurations = {TRANSITION_PERIOD, ACTIVE_SHIFT, ACTIVE_SHIFT, ACTIVE_SHIFT, ACTIVE_SHIFT, ENDGAME_PERIOD};
+
+  private double teleopStart;
 
   private final RobotContainer m_robotContainer;
 
@@ -79,6 +89,7 @@ public class Robot extends TimedRobot {
   public void teleopInit() {
     m_robotContainer.fuel.stop();
     m_robotContainer.indexer.stop();
+    teleopStart = Timer.getFPGATimestamp();
     SmartDashboard.putBoolean("TELEOP READY", true);
 
     if (m_autonomousCommand != null) {
@@ -87,7 +98,23 @@ public class Robot extends TimedRobot {
   }
 
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    double elapsed = Timer.getFPGATimestamp() - teleopStart;
+
+    double sum = 0;
+    double remaining = 0;
+
+    for (double duration : phaseDurations) {
+      sum += duration;
+      if (elapsed < sum) {
+        remaining = sum - elapsed;
+        break;
+      }
+    }
+
+    SmartDashboard.putNumber("PHASE TIME", remaining);
+    SmartDashboard.putNumber("MATCH TIME", elapsed);
+  }
 
   @Override
   public void teleopExit() {}
