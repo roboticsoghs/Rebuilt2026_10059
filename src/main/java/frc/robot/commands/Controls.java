@@ -3,16 +3,14 @@ package frc.robot.commands;
 import com.ctre.phoenix6.swerve.SwerveRequest.FieldCentric;
 import com.ctre.phoenix6.swerve.SwerveRequest.SwerveDriveBrake;
 
-import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.ParallelCommandGroup;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.FuelSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.Vision;
-import frc.robot.Constants;
 
 public class Controls extends ParallelCommandGroup{
 
@@ -20,12 +18,12 @@ public class Controls extends ParallelCommandGroup{
     public boolean autoAngleActive = false;
 
     public Controls(
-        CommandSwerveDrivetrain drivetrain, 
-        FieldCentric drive, 
-        SwerveDriveBrake brake, 
+        CommandSwerveDrivetrain drivetrain,
+        FieldCentric drive,
+        SwerveDriveBrake brake,
         Vision vision,
-        FuelSubsystem fuel, 
-        IndexerSubsystem indexer, 
+        FuelSubsystem fuel,
+        IndexerSubsystem indexer,
         CommandXboxController joystick,
         double MaxSpeed,
         double MaxAngRate
@@ -40,7 +38,9 @@ public class Controls extends ParallelCommandGroup{
                 SmartDashboard.putNumber("VelocityY Setpoint", vy*MaxSpeed);
                 SmartDashboard.putNumber("Angular Setpoint", omega*MaxAngRate);
 
-                return drive    
+                if (joystick.b().getAsBoolean()) omega = vision.calculateOmegaError();
+
+                return drive
                     .withVelocityX(vx * MaxSpeed)
                     .withVelocityY(vy * MaxSpeed)
                     .withRotationalRate(omega * MaxAngRate);

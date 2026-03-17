@@ -1,7 +1,5 @@
 package frc.robot.subsystems;
 
-import org.opencv.photo.AlignMTB;
-
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
@@ -11,9 +9,7 @@ import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.RobotContainer;
 
 public class Vision extends SubsystemBase {
     // limelight variables and stuff
@@ -61,7 +57,7 @@ public class Vision extends SubsystemBase {
 
         SmartDashboard.putNumber("AprilTag ID", aprilTagId);
         SmartDashboard.putNumber("Distance to Hub", isAnyAllianceHubFront() ? getZ() : isAnyAllianceHubAnySide() ? getZ() : 0);
-    
+
         double[] pose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[0]);
         if (pose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
             botpose = new Pose2d(pose[0], pose[1], Rotation2d.fromDegrees(pose[5]));
@@ -89,10 +85,10 @@ public class Vision extends SubsystemBase {
 
 //     if (botpose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
 //         Pose2d pose = new Pose2d(botpose[0], botpose[1], Rotation2d.fromDegrees(botpose[5]));
-        
+
 //         // Calculate timestamp: Current time minus total latency (converted to seconds)
 //         double timestamp = Timer.getFPGATimestamp() - (botpose[6] / 1000.0);
-        
+
 //         // Feed to drivetrain (assuming you pass drivetrain into Vision or use a static reference)
 //         RobotContainer.drivetrain.addVisionMeasurement(pose, timestamp);
 //     }
@@ -128,15 +124,24 @@ public class Vision extends SubsystemBase {
     public double calculateAprilTagError(double x, double z) {
         if (!isAprilTag()) return 0;
 
+        final double kP = 1.3;
+
         double xOffset = x - 0.1;
         double zOffset = z;
         double theta = Math.atan2(xOffset, zOffset);
         theta = theta + Math.signum(theta) * Math.toRadians(6);
         double error = 0 - theta;
-        error = error * 1.5;
+        error = error * kP;
 
         SmartDashboard.putNumber("angle error", error);
 
+        return error;
+    }
+
+    public double calculateOmegaError() {
+        if (!isAprilTag() || !(isAnyAllianceHubFront() || isAnyAllianceHubAnySide())) return 0.0;
+
+        double error = calculateAprilTagError(getX(), getZ());
         return error;
     }
 

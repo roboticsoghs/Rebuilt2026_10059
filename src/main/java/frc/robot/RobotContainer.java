@@ -4,22 +4,16 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
 import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.SparkBase.ControlType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.wpilibj.XboxController;
-import edu.wpi.first.wpilibj.GenericHID.RumbleType;
+import static edu.wpi.first.units.Units.MetersPerSecond;
+import static edu.wpi.first.units.Units.RadiansPerSecond;
+import static edu.wpi.first.units.Units.RotationsPerSecond;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
 import frc.robot.autos.EightPieceAutoFromCenter;
@@ -27,12 +21,12 @@ import frc.robot.autos.Nothing;
 import frc.robot.autos.OneMeterSquare;
 import frc.robot.autos.SideAutoRelativeLeft;
 import frc.robot.autos.SideAutoRelativeRight;
+import frc.robot.commands.Controls;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.FuelSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.Vision;
-import frc.robot.commands.Controls;
 
 public class RobotContainer {
     public double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -83,26 +77,31 @@ public class RobotContainer {
         Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
 
         joystick.rightTrigger(0.1).whileTrue(
-            Commands.sequence(
-                Commands.runOnce(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ()) + 0.02), fuel, vision).
-                    alongWith(Commands.runOnce(() -> indexer.startHopperIntake(), indexer)),
-                Commands.waitSeconds(1.0),
-                Commands.runOnce(() -> indexer.startShooterFeed(), indexer).repeatedly()
+            Commands.parallel(
+                Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ()) + 0.02), fuel),
+
+                Commands.run(() -> {
+                    if (fuel.isAtSetpoint(75)) {
+                        indexer.startShooterFeed();
+                    } else {
+                        indexer.startHopperIntake();
+                    }
+                }, indexer)
             ).finallyDo(() -> {
                 indexer.stop();
                 fuel.stop();
             })
         );
 
-        joystick.b().whileTrue(
-            // Commands.sequence(
-                // Commands.runOnce(() -> AngleAssist = !AngleAssist), // toggle AngleAssist
-                Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngularRate), vision)
-                    .onlyIf(() -> vision.isAnyAllianceHubFront() || vision.isAnyAllianceHubAnySide())
-                    // .repeatedly()
-                    // .onlyIf(() -> AngleAssist)
-            // )
-        );
+        // joystick.b().whileTrue(
+        //     // Commands.sequence(
+        //         // Commands.runOnce(() -> AngleAssist = !AngleAssist), // toggle AngleAssist
+        //         Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngularRate), vision)
+        //             .onlyIf(() -> vision.isAnyAllianceHubFront() || vision.isAnyAllianceHubAnySide())
+        //             // .repeatedly()
+        //             // .onlyIf(() -> AngleAssist)
+        //     // )
+        // );
 
         joystick.y().onTrue(
             Commands.runOnce(() -> {

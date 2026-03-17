@@ -1,20 +1,18 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.ClosedLoopSlot;
-import com.revrobotics.spark.FeedbackSensor;
-import com.revrobotics.spark.SparkClosedLoopController;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.PersistMode;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.ClosedLoopSlot;
+import com.revrobotics.spark.FeedbackSensor;
 import com.revrobotics.spark.SparkBase.ControlType;
-import com.revrobotics.spark.config.FeedForwardConfig;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import com.revrobotics.spark.SparkClosedLoopController;
+import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
+import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class FuelSubsystem extends SubsystemBase {
@@ -25,23 +23,21 @@ public class FuelSubsystem extends SubsystemBase {
     public final RelativeEncoder encoder;
 
     private final double maxAccel = 2700;
-    private final int maxVel = 6000;
+    private final int maxVel = 5500;
     public final double allowedError = 0.05;
 
     private final double SmartVelocityP = 0.0002;
     private final double SmartVelocityI = 0;
     private final double SmartVelocityD = 0.2;
 
-    private final double kS = 0.225; 
+    private final double kS = 0.225;
     private final double kV = 8.0 / (maxVel * 0.9); // v/rpm
     private final double kA = 0;
 
-    double encoderValue;
 
     public FuelSubsystem() {
         motor = new SparkMax(this.motorID, MotorType.kBrushless);
         config = new SparkMaxConfig();
-        encoderValue = 0;
 
         pid = motor.getClosedLoopController();
         encoder = motor.getEncoder();
@@ -87,7 +83,7 @@ public class FuelSubsystem extends SubsystemBase {
     }
 
     /**
-     * 
+     *
      * @param tolerance The RPM error tolerance
      * @return Returns true when motor is at its setpoint within a tolerance
      */
