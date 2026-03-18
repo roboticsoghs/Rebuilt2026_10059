@@ -22,7 +22,7 @@ public class IndexerSubsystem extends SubsystemBase{
     public final SparkClosedLoopController pid;
     public final RelativeEncoder encoder;
 
-    private final double SmartVelocityP = 0.00025;
+    private final double SmartVelocityP = 0.0005;
     private final double SmartVelocityI = 0;
     private final double SmartVelocityD = 0.2;
 

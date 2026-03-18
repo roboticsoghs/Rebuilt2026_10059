@@ -23,7 +23,7 @@ public class FuelSubsystem extends SubsystemBase {
     public final RelativeEncoder encoder;
 
     private final double maxAccel = 2700;
-    private final int maxVel = 5500;
+    private final int maxVel = 6500;
     public final double allowedError = 0.05;
 
     private final double SmartVelocityP = 0.0002;
@@ -89,7 +89,7 @@ public class FuelSubsystem extends SubsystemBase {
      */
     public boolean isAtSetpoint(double tolerance) {
         double currentVelocity = encoder.getVelocity();
-        double setpoint = pid.getSetpoint();
+        double setpoint = pid.getSetpoint() - 1300;
         double error = Math.abs(currentVelocity - setpoint);
         SmartDashboard.putNumber("curr vel", currentVelocity);
         SmartDashboard.putNumber("setpoint vel", setpoint);
@@ -98,9 +98,10 @@ public class FuelSubsystem extends SubsystemBase {
     }
 
     public double calcSpeedByDistance(double dist) {
-        if (dist == 0) return 0.75;
+        if (dist == 0) return 1.0;
         double speed = (0.0451092 * Math.pow(dist, 2)) + (0.0925451 * dist) + (0.592346);
         speed = speed * 0.95;
+        speed = Math.max(speed, 1.0);
         SmartDashboard.putNumber("auto speed", speed);
         return speed;
     }
