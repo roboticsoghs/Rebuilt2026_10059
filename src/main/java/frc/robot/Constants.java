@@ -22,4 +22,7 @@ public final class Constants {
     public static final double ROT_DEADBAND = 0.05;
     public static final double kDrive = 5;
     public static final double kRot = 7;
+
+    // Fuel constants
+    public static final double FUEL_TOLERANCE = 250; // magic number 250
 }

@@ -28,6 +28,7 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.FuelSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.Vision;
+import frc.robot.Constants;
 
 public class RobotContainer {
     public double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -82,7 +83,7 @@ public class RobotContainer {
                 Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ()) + 0.02), fuel),
 
                 Commands.run(() -> {
-                    if (fuel.isAtSetpoint(250)) {
+                    if (fuel.isAtSetpoint(Constants.FUEL_TOLERANCE)) {
                         indexer.startShooterFeed();
                     } else {
                         indexer.startHopperIntake();

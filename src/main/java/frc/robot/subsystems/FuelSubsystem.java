@@ -23,14 +23,14 @@ public class FuelSubsystem extends SubsystemBase {
     public final RelativeEncoder encoder;
 
     private final double maxAccel = 2700;
-    private final int maxVel = 6500;
+    private final int maxVel = 6500; // default: 6500
     public final double allowedError = 0.05;
 
     private final double SmartVelocityP = 0.0002;
     private final double SmartVelocityI = 0;
     private final double SmartVelocityD = 0.2;
 
-    private final double kS = 0.225;
+    private final double kS = 7;
     private final double kV = 8.0 / (maxVel * 0.9); // v/rpm
     private final double kA = 0;
 
@@ -98,7 +98,7 @@ public class FuelSubsystem extends SubsystemBase {
     }
 
     public double calcSpeedByDistance(double dist) {
-        if (dist == 0) return 1.0;
+        if (dist == 0) return 0.7;
         double speed = (0.0451092 * Math.pow(dist, 2)) + (0.0925451 * dist) + (0.592346);
         speed = speed * 0.95;
         speed = Math.max(speed, 1.0);
