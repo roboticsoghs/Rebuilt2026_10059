@@ -28,7 +28,6 @@ import frc.robot.subsystems.CommandSwerveDrivetrain;
 import frc.robot.subsystems.FuelSubsystem;
 import frc.robot.subsystems.IndexerSubsystem;
 import frc.robot.subsystems.Vision;
-import frc.robot.Constants;
 
 public class RobotContainer {
     public double MaxSpeed = TunerConstants.kSpeedAt12Volts.in(MetersPerSecond); // kSpeedAt12Volts desired top speed
@@ -49,8 +48,6 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
     private final SendableChooser<Integer> autoDelaySelector = new SendableChooser<>();
-
-    // private boolean AngleAssist = false;
 
     public RobotContainer() {
         configureBindings();
@@ -80,14 +77,11 @@ public class RobotContainer {
 
         joystick.rightTrigger(0.1).whileTrue(
             Commands.parallel(
-                Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ()) + 0.02), fuel),
+                Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel),
 
                 Commands.run(() -> {
-                    if (fuel.isAtSetpoint(Constants.FUEL_TOLERANCE)) {
-                        indexer.startShooterFeed();
-                    } else {
-                        indexer.startHopperIntake();
-                    }
+                    if (fuel.isAtSetpoint(100)) indexer.startShooterFeed();
+                    else indexer.stop(); 
                 }, indexer)
             ).finallyDo(() -> {
                 indexer.stop();

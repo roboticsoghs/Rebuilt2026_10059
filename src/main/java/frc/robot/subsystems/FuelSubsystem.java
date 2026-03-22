@@ -22,16 +22,20 @@ public class FuelSubsystem extends SubsystemBase {
     public final SparkClosedLoopController pid;
     public final RelativeEncoder encoder;
 
-    private final double maxAccel = 2700;
-    private final int maxVel = 6500; // default: 6500
+    private final double maxAccel = 5000;
+    private final int maxVel = 5350; // default: 6500
     public final double allowedError = 0.05;
 
-    private final double SmartVelocityP = 0.0002;
-    private final double SmartVelocityI = 0;
-    private final double SmartVelocityD = 0.2;
+    private final double SmartVelocityP = 0.00095;
+    private final double SmartVelocityI = 0.0;
+    private final double SmartVelocityD = 0.01;
 
-    private final double kS = 7;
-    private final double kV = 8.0 / (maxVel * 0.9); // v/rpm
+    private final double SmartVelocityP2 = 0.0002;
+    private final double SmartVelocityI2 = 0.0;
+    private final double SmartVelocityD2 = 0.2;
+
+    private final double kS = 0.225;
+    private final double kV = 12.0 / maxVel; // v/rpm
     private final double kA = 0;
 
 
@@ -46,12 +50,19 @@ public class FuelSubsystem extends SubsystemBase {
         config.smartCurrentLimit(60);
         config.idleMode(IdleMode.kCoast);
 
-        // configure PID
+        // configure PID slot 0 (kVelocity)
         config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         config.closedLoop.pid(SmartVelocityP, SmartVelocityI, SmartVelocityD, ClosedLoopSlot.kSlot0);
-        config.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot0);
+        // config.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot0);
         config.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot0);
         config.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot0);
+
+        // configure PID slot 1 (MaxMotion)
+        config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        config.closedLoop.pid(SmartVelocityP2, SmartVelocityI2, SmartVelocityD2, ClosedLoopSlot.kSlot1);
+        config.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot1);
+        config.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot1);
+        config.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot1);
 
         // FF
         config.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
@@ -64,18 +75,19 @@ public class FuelSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Fuel Setpoint", pid.getSetpoint());
         SmartDashboard.putNumber("Fuel Vel", encoder.getVelocity());
+        SmartDashboard.putNumber("fuel voltage", motor.getAppliedOutput() * 12);
     }
 
     public void startHopperIntake() {
-        pid.setSetpoint(0.3 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        pid.setSetpoint(0.5 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot1);
     }
 
     public void runUp(double speed) {
-        pid.setSetpoint(speed * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        pid.setSetpoint(speed * maxVel, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
     }
 
     public void startGroundOuttake() {
-        pid.setSetpoint(-0.6 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot0);
+        pid.setSetpoint(-0.6 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot1);
     }
 
     public void stop() {
@@ -89,7 +101,7 @@ public class FuelSubsystem extends SubsystemBase {
      */
     public boolean isAtSetpoint(double tolerance) {
         double currentVelocity = encoder.getVelocity();
-        double setpoint = pid.getSetpoint() - 1300;
+        double setpoint = pid.getSetpoint();
         double error = Math.abs(currentVelocity - setpoint);
         SmartDashboard.putNumber("curr vel", currentVelocity);
         SmartDashboard.putNumber("setpoint vel", setpoint);
@@ -100,7 +112,7 @@ public class FuelSubsystem extends SubsystemBase {
     public double calcSpeedByDistance(double dist) {
         if (dist == 0) return 0.7;
         double speed = (0.0451092 * Math.pow(dist, 2)) + (0.0925451 * dist) + (0.592346);
-        speed = speed * 0.95;
+        speed = (speed * 0.95);
         speed = Math.max(speed, 1.0);
         SmartDashboard.putNumber("auto speed", speed);
         return speed;

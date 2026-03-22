@@ -4,10 +4,6 @@
 
 package frc.robot;
 
-import static edu.wpi.first.units.Units.*;
-
-import frc.robot.generated.TunerConstants;
-
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
  * constants. This class should not be used for any other purpose. All constants should be declared
@@ -22,7 +18,4 @@ public final class Constants {
     public static final double ROT_DEADBAND = 0.05;
     public static final double kDrive = 5;
     public static final double kRot = 7;
-
-    // Fuel constants
-    public static final double FUEL_TOLERANCE = 250; // magic number 250
 }
