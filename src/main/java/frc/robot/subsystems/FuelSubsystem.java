@@ -23,10 +23,10 @@ public class FuelSubsystem extends SubsystemBase {
     public final RelativeEncoder encoder;
 
     private final double maxAccel = 5000;
-    private final int maxVel = 5350; // default: 6500
+    private final int maxVel = 5350;
     public final double allowedError = 0.05;
 
-    private final double SmartVelocityP = 0.00095;
+    private final double SmartVelocityP = 0.0009;
     private final double SmartVelocityI = 0.0;
     private final double SmartVelocityD = 0.01;
 
@@ -75,7 +75,7 @@ public class FuelSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Fuel Setpoint", pid.getSetpoint());
         SmartDashboard.putNumber("Fuel Vel", encoder.getVelocity());
-        SmartDashboard.putNumber("fuel voltage", motor.getAppliedOutput() * 12);
+        SmartDashboard.putNumber("fuel voltage", motor.getAppliedOutput() * motor.getBusVoltage());
     }
 
     public void startHopperIntake() {
@@ -110,10 +110,10 @@ public class FuelSubsystem extends SubsystemBase {
     }
 
     public double calcSpeedByDistance(double dist) {
-        if (dist == 0) return 0.7;
-        double speed = (0.0451092 * Math.pow(dist, 2)) + (0.0925451 * dist) + (0.592346);
-        speed = (speed * 0.95);
-        speed = Math.max(speed, 1.0);
+        if (dist == 0) return 0.69;
+        double speed = (0.0442568 * Math.pow(dist, 2)) - (0.0384624 * dist) + (0.686249);
+        // speed = (speed * 0.95);
+        speed = Math.min(speed, 0.85);
         SmartDashboard.putNumber("auto speed", speed);
         return speed;
     }

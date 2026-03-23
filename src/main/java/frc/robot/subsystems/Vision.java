@@ -4,6 +4,8 @@ import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Transform2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableEntry;
 import edu.wpi.first.networktables.NetworkTableInstance;
@@ -34,6 +36,13 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic(){
+        table.getEntry("robot_orientation_set").setDoubleArray(
+            new double[] {
+                drivetrain.getPose().getRotation().getDegrees(),
+                0, 0, 0, 0, 0
+            }
+        );
+
         camera = cameraPose.getDoubleArray(new double[6]);
         aprilTagId = table.getEntry("tid").getInteger(-1);
 
@@ -53,11 +62,16 @@ public class Vision extends SubsystemBase {
         // SmartDashboard.putNumber("Limelight Roll", roll);
 
         SmartDashboard.putNumber("AprilTag ID", aprilTagId);
-        SmartDashboard.putNumber("Distance to Hub", isAnyAllianceHubFront() ? getZ() : isAnyAllianceHubAnySide() ? getZ() : 0);
+        // SmartDashboard.putNumber("Distance to Hub", isAnyAllianceHubFront() ? getZ() : isAnyAllianceHubAnySide() ? getZ() : 0);
+        SmartDashboard.putNumber("Distance to Hub", getZ());
 
-        double[] pose = table.getEntry("botpose_wpiblue").getDoubleArray(new double[0]);
+        double[] pose = table.getEntry("botpose_orb").getDoubleArray(new double[0]);
         if (pose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
-            Pose2d visionPose = new Pose2d(pose[0], pose[1], Rotation2d.fromDegrees(pose[5]));
+            Transform2d cameraPose = new Transform2d(
+                new Translation2d(0.2286, 0.1143),
+                Rotation2d.fromDegrees(180)
+            );
+            Pose2d visionPose = new Pose2d(pose[0], pose[1], drivetrain.getRotation3d().toRotation2d()).plus(cameraPose);
             double timestamp = Timer.getFPGATimestamp() - (pose[6] / 1000.0);
 
             drivetrain.addVisionMeasurement(visionPose, timestamp);
@@ -108,7 +122,8 @@ public class Vision extends SubsystemBase {
     }
 
     public double calculateOmegaError() {
-        if (!isAprilTag() || !(isAnyAllianceHubFront() || isAnyAllianceHubAnySide())) return 0.0;
+        // if (!isAprilTag() || !(isAnyAllianceHubFront() || isAnyAllianceHubAnySide())) return 0.0;
+        if (!isAprilTag()) return 0;
 
         double error = calculateAprilTagError(getX(), getZ());
         return error;
