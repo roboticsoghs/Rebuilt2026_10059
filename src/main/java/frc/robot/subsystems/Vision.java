@@ -67,11 +67,7 @@ public class Vision extends SubsystemBase {
 
         double[] pose = table.getEntry("botpose_orb").getDoubleArray(new double[0]);
         if (pose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
-            Transform2d cameraPose = new Transform2d(
-                new Translation2d(0.2286, 0.1143),
-                Rotation2d.fromDegrees(180)
-            );
-            Pose2d visionPose = new Pose2d(pose[0], pose[1], drivetrain.getRotation3d().toRotation2d()).plus(cameraPose);
+            Pose2d visionPose = new Pose2d(pose[0], pose[1], drivetrain.getRotation3d().toRotation2d());
             double timestamp = Timer.getFPGATimestamp() - (pose[6] / 1000.0);
 
             drivetrain.addVisionMeasurement(visionPose, timestamp);
