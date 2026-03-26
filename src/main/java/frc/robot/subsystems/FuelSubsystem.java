@@ -70,6 +70,7 @@ public class FuelSubsystem extends SubsystemBase {
         config1.smartCurrentLimit(60);
         config1.idleMode(IdleMode.kCoast);
 
+        // motor 1 config
         // configure PID slot 0 (kVelocity)
         config1.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         config1.closedLoop.pid(SmartVelocityP, SmartVelocityI, SmartVelocityD, ClosedLoopSlot.kSlot0);
@@ -85,30 +86,19 @@ public class FuelSubsystem extends SubsystemBase {
         config1.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot1);
 
         // // FF
-        // config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
+        config1.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
+        config1.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot1).kV(kV, ClosedLoopSlot.kSlot1).kA(kA, ClosedLoopSlot.kSlot1);
 
+        // motor 2 config
         config2.voltageCompensation(12);
         config2.smartCurrentLimit(60);
         config2.idleMode(IdleMode.kCoast);
 
-        // // configure PID slot 0 (kVelocity)
-        // config2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        // config2.closedLoop.pid(SmartVelocityP, SmartVelocityI, SmartVelocityD, ClosedLoopSlot.kSlot0);
-        // // config.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot0);
-        // config2.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot0);
-        // config2.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot0);
-
-        // // configure PID slot 1 (MaxMotion)
-        // config2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        // config2.closedLoop.pid(SmartVelocityP2, SmartVelocityI2, SmartVelocityD2, ClosedLoopSlot.kSlot1);
-        // config2.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot1);
-        // config2.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot1);
-        // config2.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot1);
-
         // // FF
-        // config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
+        config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
+        config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot1).kV(kV, ClosedLoopSlot.kSlot1).kA(kA, ClosedLoopSlot.kSlot1);
 
-        //config2.follow(motor1, false);
+        config2.follow(motor1, false);
 
         config1.signals.primaryEncoderPositionPeriodMs(5);
         motor1.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
