@@ -57,8 +57,6 @@ public class FuelSubsystem extends SubsystemBase {
         config1 = new SparkMaxConfig();
         config2 = new SparkMaxConfig();
 
-        config2.follow(motor1); // attempting motor follow
-
         pid1 = motor1.getClosedLoopController();
         pid2 = motor2.getClosedLoopController();
 
@@ -93,10 +91,6 @@ public class FuelSubsystem extends SubsystemBase {
         config2.voltageCompensation(12);
         config2.smartCurrentLimit(60);
         config2.idleMode(IdleMode.kCoast);
-
-        // // FF
-        config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
-        config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot1).kV(kV, ClosedLoopSlot.kSlot1).kA(kA, ClosedLoopSlot.kSlot1);
 
         config2.follow(motor1, false);
 
