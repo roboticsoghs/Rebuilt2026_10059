@@ -42,7 +42,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Robot Omega", m_robotContainer.drivetrain.getState().Speeds.omegaRadiansPerSecond);
 
     SmartDashboard.putNumber("FuelSubsystem Motor Temp", ((m_robotContainer.fuel.motor1.getMotorTemperature() + m_robotContainer.fuel.motor2.getMotorTemperature()) / 2));
-    SmartDashboard.putBoolean("FuelSystem Overheat Warn", ((m_robotContainer.fuel.motor1.getMotorTemperature() + m_robotContainer.fuel.motor2.getMotorTemperature()) / 2) >= 60);
+    SmartDashboard.putBoolean("FuelSystem Overheat Warn", ((m_robotContainer.fuel.motor1.getMotorTemperature() + m_robotContainer.fuel.motor2.getMotorTemperature()) / 2) >= 55);
     SmartDashboard.putNumber("Indexer Motor Temp", m_robotContainer.indexer.motor.getMotorTemperature());
     SmartDashboard.putBoolean("Indexer Overheat Warn", m_robotContainer.indexer.motor.getMotorTemperature() >= 60);
     SmartDashboard.putBoolean("Shooter Ready", m_robotContainer.fuel.isAtSetpoint(100));
