@@ -22,27 +22,25 @@ public class EightPieceAutoFromCenter extends SequentialCommandGroup {
         double MaxAngRate
     ) {
         addCommands(
-            // Commands.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.fromDegrees(180))),
+            Commands.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.fromDegrees(180))),
             drivetrain.applyRequest(() -> drive.withVelocityX(-0.5 * MaxSpeed))
                 .until(() -> vision.isAnyAllianceHubFront())
-                .withTimeout(0.4),
+                .withTimeout(0.5),
             drivetrain.applyRequest(() -> brake).withTimeout(0.1),
             Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
                 .until(() -> vision.isFacingAprilTag())
                 .finallyDo(() -> drivetrain.setControl(brake))
-                .withTimeout(0.75),
+                .withTimeout(1.0),
             Commands.parallel(
-                Commands.runOnce(() -> fuel.runUp(0.72), vision, fuel),
+                Commands.runOnce(() -> fuel.runUp(0.70), vision, fuel),
                 Commands.runOnce(() -> indexer.startHopperIntake(), indexer),
                 Commands.waitSeconds(1.5)
             ),
-            Commands.runOnce(() -> indexer.startShooterFeed(), indexer).repeatedly().withTimeout(17),
-            Commands.parallel(
-                Commands.runOnce(() -> {
+            Commands.run(() -> indexer.startShooterFeed(), indexer).withTimeout(17),
+            Commands.runOnce(() -> {
                     fuel.stop();
                     indexer.stop();
                 }, fuel, indexer)
-            )
         );
     }
 }
