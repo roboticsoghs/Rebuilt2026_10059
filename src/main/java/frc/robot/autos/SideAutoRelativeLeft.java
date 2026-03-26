@@ -24,6 +24,7 @@ public class SideAutoRelativeLeft extends SequentialCommandGroup {
         double MaxAngRate
     ) {
         addCommands(
+            Commands.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.fromDegrees(180))),
             drivetrain.applyRequest(() -> drive.withRotationalRate(-0.3 * MaxAngRate))
                 // .until(() -> vision.isAnyAllianceHubAnySide())
                 .withTimeout(0.75),
@@ -31,7 +32,6 @@ public class SideAutoRelativeLeft extends SequentialCommandGroup {
             drivetrain.applyRequest(() -> drive.withRotationalRate(0)).withTimeout(0.1),
             Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
                 .until(() -> vision.isFacingAprilTag())
-                .onlyIf(() -> vision.isAprilTag())
                 .finallyDo(() -> drivetrain.setControl(brake))
                 .withTimeout(0.5),
             Commands.parallel(
