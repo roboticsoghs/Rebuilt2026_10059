@@ -2,6 +2,7 @@ package frc.robot.autos;
 
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -21,6 +22,7 @@ public class EightPieceAutoFromCenter extends SequentialCommandGroup {
         double MaxAngRate
     ) {
         addCommands(
+            // Commands.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.fromDegrees(180))),
             drivetrain.applyRequest(() -> drive.withVelocityX(-0.5 * MaxSpeed))
                 .until(() -> vision.isAnyAllianceHubFront())
                 .withTimeout(0.4),

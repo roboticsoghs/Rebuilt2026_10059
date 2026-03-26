@@ -16,12 +16,22 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class FuelSubsystem extends SubsystemBase {
-    private final int motorID = 15;
-    public final SparkMax motor;
-    private final SparkMaxConfig config;
-    public final SparkClosedLoopController pid;
-    public final RelativeEncoder encoder;
+    private final int motor1ID = 15;
+    private final int motor2ID = 16;
 
+    // For motor1
+    public final SparkMax motor1;
+    private final SparkMaxConfig config1;
+    public final SparkClosedLoopController pid1;
+    public final RelativeEncoder encoder1;
+
+    // For motor2
+    public final SparkMax motor2;
+    private final SparkMaxConfig config2;
+    public final SparkClosedLoopController pid2;
+    public final RelativeEncoder encoder2;
+
+    // Settings                                                                                                                      a
     private final double maxAccel = 5000;
     private final int maxVel = 5350;
     public final double allowedError = 0.05;
@@ -40,58 +50,95 @@ public class FuelSubsystem extends SubsystemBase {
 
 
     public FuelSubsystem() {
-        motor = new SparkMax(this.motorID, MotorType.kBrushless);
-        config = new SparkMaxConfig();
+        motor1 = new SparkMax(this.motor1ID, MotorType.kBrushless);
+        motor2 = new SparkMax(this.motor2ID, MotorType.kBrushless);
 
-        pid = motor.getClosedLoopController();
-        encoder = motor.getEncoder();
 
-        config.voltageCompensation(12);
-        config.smartCurrentLimit(60);
-        config.idleMode(IdleMode.kCoast);
+        config1 = new SparkMaxConfig();
+        config2 = new SparkMaxConfig();
+
+        config2.follow(motor1, false); // attempting motor follow
+
+        pid1 = motor1.getClosedLoopController();
+        pid2 = motor2.getClosedLoopController();
+
+
+        encoder1 = motor1.getEncoder();
+        encoder2 = motor2.getEncoder();
+
+        config1.voltageCompensation(12);
+        config1.smartCurrentLimit(60);
+        config1.idleMode(IdleMode.kCoast);
 
         // configure PID slot 0 (kVelocity)
-        config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        config.closedLoop.pid(SmartVelocityP, SmartVelocityI, SmartVelocityD, ClosedLoopSlot.kSlot0);
+        config1.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        config1.closedLoop.pid(SmartVelocityP, SmartVelocityI, SmartVelocityD, ClosedLoopSlot.kSlot0);
         // config.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot0);
-        config.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot0);
-        config.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot0);
+        config1.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot0);
+        config1.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot0);
 
         // configure PID slot 1 (MaxMotion)
-        config.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        config.closedLoop.pid(SmartVelocityP2, SmartVelocityI2, SmartVelocityD2, ClosedLoopSlot.kSlot1);
-        config.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot1);
-        config.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot1);
-        config.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot1);
+        config1.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        config1.closedLoop.pid(SmartVelocityP2, SmartVelocityI2, SmartVelocityD2, ClosedLoopSlot.kSlot1);
+        config1.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot1);
+        config1.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot1);
+        config1.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot1);
 
         // FF
-        config.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
+        config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
 
-        config.signals.primaryEncoderPositionPeriodMs(5);
-        motor.configure(config, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+        config2.voltageCompensation(12);
+        config2.smartCurrentLimit(60);
+        config2.idleMode(IdleMode.kCoast);
+
+        // configure PID slot 0 (kVelocity)
+        config2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        config2.closedLoop.pid(SmartVelocityP, SmartVelocityI, SmartVelocityD, ClosedLoopSlot.kSlot0);
+        // config.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot0);
+        config2.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot0);
+        config2.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot0);
+
+        // configure PID slot 1 (MaxMotion)
+        config2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        config2.closedLoop.pid(SmartVelocityP2, SmartVelocityI2, SmartVelocityD2, ClosedLoopSlot.kSlot1);
+        config2.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot1);
+        config2.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot1);
+        config2.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot1);
+
+        // FF
+        config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
+
+        //config2.follow(motor1, false);
+
+        config1.signals.primaryEncoderPositionPeriodMs(5);
+        motor1.configure(config1, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+
+        config2.signals.primaryEncoderPositionPeriodMs(5);
+        motor2.configure(config2, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("Fuel Setpoint", pid.getSetpoint());
-        SmartDashboard.putNumber("Fuel Vel", encoder.getVelocity());
-        SmartDashboard.putNumber("fuel voltage", motor.getAppliedOutput() * motor.getBusVoltage());
+        SmartDashboard.putNumber("Fuel Setpoint", pid1.getSetpoint());
+        SmartDashboard.putNumber("Fuel Vel", encoder1.getVelocity());
+        SmartDashboard.putNumber("fuel voltage", motor1.getAppliedOutput() * motor1.getBusVoltage());
     }
 
     public void startHopperIntake() {
-        pid.setSetpoint(0.5 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot1);
+        pid1.setSetpoint(0.5 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot1);
     }
 
     public void runUp(double speed) {
-        pid.setSetpoint(speed * maxVel, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
+        pid1.setSetpoint(speed * maxVel, ControlType.kVelocity, ClosedLoopSlot.kSlot0);
     }
 
     public void startGroundOuttake() {
-        pid.setSetpoint(-0.6 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot1);
+        pid1.setSetpoint(-0.6 * maxVel, ControlType.kMAXMotionVelocityControl, ClosedLoopSlot.kSlot1);
     }
 
     public void stop() {
-        motor.stopMotor();
+        motor1.stopMotor();
+        motor2.stopMotor();
     }
 
     /**
@@ -100,8 +147,8 @@ public class FuelSubsystem extends SubsystemBase {
      * @return Returns true when motor is at its setpoint within a tolerance
      */
     public boolean isAtSetpoint(double tolerance) {
-        double currentVelocity = encoder.getVelocity();
-        double setpoint = pid.getSetpoint();
+        double currentVelocity = encoder1.getVelocity();
+        double setpoint = pid1.getSetpoint();
         double error = Math.abs(currentVelocity - setpoint);
         SmartDashboard.putNumber("curr vel", currentVelocity);
         SmartDashboard.putNumber("setpoint vel", setpoint);
