@@ -57,7 +57,7 @@ public class FuelSubsystem extends SubsystemBase {
         config1 = new SparkMaxConfig();
         config2 = new SparkMaxConfig();
 
-        config2.follow(motor1, false); // attempting motor follow
+        config2.follow(motor1); // attempting motor follow
 
         pid1 = motor1.getClosedLoopController();
         pid2 = motor2.getClosedLoopController();
@@ -84,29 +84,29 @@ public class FuelSubsystem extends SubsystemBase {
         config1.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot1);
         config1.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot1);
 
-        // FF
-        config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
+        // // FF
+        // config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
 
         config2.voltageCompensation(12);
         config2.smartCurrentLimit(60);
         config2.idleMode(IdleMode.kCoast);
 
-        // configure PID slot 0 (kVelocity)
-        config2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        config2.closedLoop.pid(SmartVelocityP, SmartVelocityI, SmartVelocityD, ClosedLoopSlot.kSlot0);
-        // config.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot0);
-        config2.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot0);
-        config2.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot0);
+        // // configure PID slot 0 (kVelocity)
+        // config2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        // config2.closedLoop.pid(SmartVelocityP, SmartVelocityI, SmartVelocityD, ClosedLoopSlot.kSlot0);
+        // // config.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot0);
+        // config2.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot0);
+        // config2.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot0);
 
-        // configure PID slot 1 (MaxMotion)
-        config2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
-        config2.closedLoop.pid(SmartVelocityP2, SmartVelocityI2, SmartVelocityD2, ClosedLoopSlot.kSlot1);
-        config2.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot1);
-        config2.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot1);
-        config2.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot1);
+        // // configure PID slot 1 (MaxMotion)
+        // config2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
+        // config2.closedLoop.pid(SmartVelocityP2, SmartVelocityI2, SmartVelocityD2, ClosedLoopSlot.kSlot1);
+        // config2.closedLoop.maxMotion.maxAcceleration(maxAccel, ClosedLoopSlot.kSlot1);
+        // config2.closedLoop.maxMotion.cruiseVelocity(maxVel, ClosedLoopSlot.kSlot1);
+        // config2.closedLoop.maxMotion.allowedProfileError(allowedError, ClosedLoopSlot.kSlot1);
 
-        // FF
-        config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
+        // // FF
+        // config2.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot0).kV(kV, ClosedLoopSlot.kSlot0).kA(kA, ClosedLoopSlot.kSlot0);
 
         //config2.follow(motor1, false);
 
