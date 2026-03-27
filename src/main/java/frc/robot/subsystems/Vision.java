@@ -62,8 +62,8 @@ public class Vision extends SubsystemBase {
         // SmartDashboard.putNumber("Limelight Roll", roll);
 
         SmartDashboard.putNumber("AprilTag ID", aprilTagId);
-        SmartDashboard.putNumber("Distance to Hub", isAnyAllianceHubFront() ? getZ() : isAnyAllianceHubAnySide() ? getZ() : 0);
-        // SmartDashboard.putNumber("Distance to Hub", getZ()); // debug
+        // SmartDashboard.putNumber("Distance to Hub", isAnyAllianceHubFront() ? getZ() : isAnyAllianceHubAnySide() ? getZ() : 0);
+        SmartDashboard.putNumber("Distance to Hub", getZ()); // debug
 
         double[] pose = table.getEntry("botpose_orb").getDoubleArray(new double[0]);
         if (pose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
@@ -96,7 +96,7 @@ public class Vision extends SubsystemBase {
     public double getRoll() {
         return roll;
     }
-    public int getId() {
+    public long getId() {
         return aprilTagId;
     }
 

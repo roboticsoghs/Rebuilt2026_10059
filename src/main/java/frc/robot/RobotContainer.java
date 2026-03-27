@@ -80,7 +80,7 @@ public class RobotContainer {
                 Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel),
 
                 Commands.run(() -> {
-                    if (fuel.isAtSetpoint(50)) indexer.startShooterFeed();
+                    if (fuel.isAtSetpoint(80)) indexer.startShooterFeed();
                     else indexer.startHopperIntake(); 
                 }, indexer)
             ).finallyDo(() -> {

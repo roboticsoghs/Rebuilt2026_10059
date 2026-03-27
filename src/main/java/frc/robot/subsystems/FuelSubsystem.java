@@ -16,6 +16,8 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class FuelSubsystem extends SubsystemBase {
+    private final double MAX_ALLOWED_SPEED = 0.8;
+
     private final int motor1ID = 15;
     private final int motor2ID = 16;
 
@@ -33,10 +35,10 @@ public class FuelSubsystem extends SubsystemBase {
 
     // Settings                                                                                                                      a
     private final double maxAccel = 5000;
-    private final int maxVel = 5350;
+    private final int maxVel = 5300;
     public final double allowedError = 0.05;
 
-    private final double SmartVelocityP = 0.0009;
+    private final double SmartVelocityP = 0.0003;
     private final double SmartVelocityI = 0.0;
     private final double SmartVelocityD = 0.01;
 
@@ -45,7 +47,7 @@ public class FuelSubsystem extends SubsystemBase {
     private final double SmartVelocityD2 = 0.2;
 
     private final double kS = 0.225;
-    private final double kV = 12.0 / maxVel; // v/rpm
+    private final double kV = 11.0 / maxVel; // v/rpm
     private final double kA = 0;
 
 
@@ -105,6 +107,7 @@ public class FuelSubsystem extends SubsystemBase {
     public void periodic() {
         SmartDashboard.putNumber("Fuel Setpoint", pid1.getSetpoint());
         SmartDashboard.putNumber("Fuel Vel", encoder1.getVelocity());
+        SmartDashboard.putNumber("Fuel2 Vel", encoder2.getVelocity());
         SmartDashboard.putNumber("fuel voltage", motor1.getAppliedOutput() * motor1.getBusVoltage());
     }
 
@@ -141,10 +144,10 @@ public class FuelSubsystem extends SubsystemBase {
     }
 
     public double calcSpeedByDistance(double dist) {
-        if (dist == 0) return 0.69;
-        double speed = (0.0442568 * Math.pow(dist, 2)) - (0.0384624 * dist) + (0.686249);
-        // speed = (speed * 0.95);
-        speed = Math.min(speed, 0.85);
+        if (dist == 0) return MAX_ALLOWED_SPEED;
+        double speed = 0.0118029*Math.pow(dist, 2) + 0.00907623*dist + 0.596337;
+        speed *= 0.95;
+        speed = Math.min(speed, MAX_ALLOWED_SPEED);
         SmartDashboard.putNumber("auto speed", speed);
         return speed;
     }
