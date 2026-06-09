@@ -36,12 +36,12 @@ public class Vision extends SubsystemBase {
 
     @Override
     public void periodic(){
-        table.getEntry("robot_orientation_set").setDoubleArray(
-            new double[] {
-                drivetrain.getPose().getRotation().getDegrees(),
-                0, 0, 0, 0, 0
-            }
-        );
+        // table.getEntry("robot_orientation_set").setDoubleArray(
+        //     new double[] {
+        //         drivetrain.getPose().getRotation().getDegrees(),
+        //         0, 0, 0, 0, 0
+        //     }
+        // );
 
         camera = cameraPose.getDoubleArray(new double[6]);
         aprilTagId = table.getEntry("tid").getInteger(-1);
@@ -50,34 +50,36 @@ public class Vision extends SubsystemBase {
         x = camera[0];
         y = camera[1];
         z = camera[2];
-        pitch = camera[3];
-        yaw = camera[4];
-        roll = camera[5];
+        roll = camera[3];
+        pitch = camera[4];
+        yaw = camera[5];
 
-        // SmartDashboard.putNumber("LimelightX", x);
-        // SmartDashboard.putNumber("LimelightY", y);
-        // SmartDashboard.putNumber("LimelightZ", z);
-        // SmartDashboard.putNumber("Limelight Pitch", pitch);
-        // SmartDashboard.putNumber("Limelight Yaw", yaw);
-        // SmartDashboard.putNumber("Limelight Roll", roll);
+        SmartDashboard.putNumber("LimelightX", x);
+        SmartDashboard.putNumber("LimelightY", y);
+        SmartDashboard.putNumber("LimelightZ", z);
+        SmartDashboard.putNumber("Limelight Pitch", pitch);
+        SmartDashboard.putNumber("Limelight Yaw", yaw);
+        SmartDashboard.putNumber("Limelight Roll", roll);
 
         SmartDashboard.putNumber("AprilTag ID", aprilTagId);
         // SmartDashboard.putNumber("Distance to Hub", isAnyAllianceHubFront() ? getZ() : isAnyAllianceHubAnySide() ? getZ() : 0);
         SmartDashboard.putNumber("Distance to Hub", getZ()); // debug
+        SmartDashboard.putNumber("Omega Error", calculateYawError(yaw));
 
-        double[] pose = table.getEntry("botpose_orb").getDoubleArray(new double[0]);
-        if (pose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
-            Pose2d visionPose = new Pose2d(pose[0], pose[1], drivetrain.getRotation3d().toRotation2d());
-            double timestamp = Timer.getFPGATimestamp() - (pose[6] / 1000.0);
+        // double[] pose = table.getEntry("botpose_orb").getDoubleArray(new double[0]);
+        // if (pose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
+        //     Pose2d visionPose = new Pose2d(pose[0], pose[1], drivetrain.getRotation3d().toRotation2d());
+        //     double timestamp = Timer.getFPGATimestamp() - (pose[6] / 1000.0);
 
-            drivetrain.addVisionMeasurement(visionPose, timestamp);
-        }
+        //     drivetrain.addVisionMeasurement(visionPose, timestamp);
+        // }
     }
 
     // get values relative to april tag
     public boolean isAprilTag(){
-        return table.getEntry("tv").getDouble(0) > 0;
+        return x != 0 && y != 0;
     }
+    
     public double getX() {
         return x;
     }
@@ -100,15 +102,25 @@ public class Vision extends SubsystemBase {
         return aprilTagId;
     }
 
+    public double calculateYawError(double yaw) {
+        if (!isAprilTag()) return 0;
+
+        final double kP = 0.6;
+        double error = 0 - yaw;
+        error = error * kP;
+
+        return error;
+    }
+
     public double calculateAprilTagError(double x, double z) {
         if (!isAprilTag()) return 0;
 
-        final double kP = 1.3;
+        final double kP = 0.6;
 
-        double xOffset = x - 0.1;
+        double xOffset = x - 0.05;
         double zOffset = z;
         double theta = Math.atan2(xOffset, zOffset);
-        theta = theta + Math.signum(theta);
+        theta = theta * Math.signum(theta);
         double error = 0 - theta;
         error = error * kP;
 
@@ -118,10 +130,12 @@ public class Vision extends SubsystemBase {
     }
 
     public double calculateOmegaError() {
-        // if (!isAprilTag() || !(isAnyAllianceHubFront() || isAnyAllianceHubAnySide())) return 0.0;
         if (!isAprilTag()) return 0;
 
         double error = calculateAprilTagError(getX(), getZ());
+
+        if (Math.abs(error) < 0.7) return 0.0;
+
         return error;
     }
 

@@ -1,46 +1,46 @@
-package frc.robot.autos;
+// package frc.robot.autos;
 
-import com.ctre.phoenix6.swerve.SwerveRequest;
+// import com.ctre.phoenix6.swerve.SwerveRequest;
 
-import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Commands;
-import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
-import frc.robot.commands.DriveDistance;
-import frc.robot.commands.DriveToPoseCommand;
-import frc.robot.subsystems.CommandSwerveDrivetrain;
-import frc.robot.subsystems.FuelSubsystem;
-import frc.robot.subsystems.IndexerSubsystem;
-import frc.robot.subsystems.Vision;
+// import edu.wpi.first.math.geometry.Rotation2d;
+// import edu.wpi.first.wpilibj2.command.Command;
+// import edu.wpi.first.wpilibj2.command.Commands;
+// import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+// import frc.robot.commands.DriveDistance;
+// import frc.robot.commands.DriveToPoseCommand;
+// import frc.robot.subsystems.CommandSwerveDrivetrain;
+// import frc.robot.subsystems.FuelSubsystem;
+// import frc.robot.subsystems.IndexerSubsystem;
+// import frc.robot.subsystems.Vision;
 
-public class SideAutoRelativeRight extends SequentialCommandGroup {
-    public SideAutoRelativeRight(
-        CommandSwerveDrivetrain drivetrain,
-        SwerveRequest.FieldCentric drive,
-        SwerveRequest.SwerveDriveBrake brake,
-        Vision vision,
-        FuelSubsystem fuel,
-        IndexerSubsystem indexer,
-        double MaxSpeed,
-        double MaxAngRate
-    ) {
-        addCommands(
-            Commands.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.fromDegrees(180))),
-            drivetrain.applyRequest(() -> drive.withRotationalRate(0.3 * MaxAngRate))
-                // .until(() -> vision.isAnyAllianceHubAnySide())
-                .withTimeout(0.75),
-            drivetrain.applyRequest(() -> brake).withTimeout(0.1),
-            drivetrain.applyRequest(() -> drive.withRotationalRate(0)).withTimeout(0.1),
-            Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
-                .until(() -> vision.isFacingAprilTag())
-                .finallyDo(() -> drivetrain.setControl(brake))
-                .withTimeout(0.5),
-            Commands.parallel(
-                Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel, vision).withTimeout(0.2),
-                Commands.runOnce(() -> indexer.startHopperIntake(), indexer),
-                Commands.waitSeconds(1.5)
-            ),
-            Commands.runOnce(() -> indexer.startShooterFeed(), indexer).repeatedly()
-        );
-    }
-}
+// public class SideAutoRelativeRight extends SequentialCommandGroup {
+//     public SideAutoRelativeRight(
+//         CommandSwerveDrivetrain drivetrain,
+//         SwerveRequest.FieldCentric drive,
+//         SwerveRequest.SwerveDriveBrake brake,
+//         Vision vision,
+//         FuelSubsystem fuel,
+//         IndexerSubsystem indexer,
+//         double MaxSpeed,
+//         double MaxAngRate
+//     ) {
+//         addCommands(
+//             Commands.runOnce(() -> drivetrain.seedFieldCentric(Rotation2d.fromDegrees(180))),
+//             drivetrain.applyRequest(() -> drive.withRotationalRate(0.3 * MaxAngRate))
+//                 // .until(() -> vision.isAnyAllianceHubAnySide())
+//                 .withTimeout(0.75),
+//             drivetrain.applyRequest(() -> brake).withTimeout(0.1),
+//             drivetrain.applyRequest(() -> drive.withRotationalRate(0)).withTimeout(0.1),
+//             Commands.run(() -> vision.faceAprilTag(drivetrain, drive, brake, MaxAngRate), vision, drivetrain)
+//                 .until(() -> vision.isFacingAprilTag())
+//                 .finallyDo(() -> drivetrain.setControl(brake))
+//                 .withTimeout(0.5),
+//             Commands.parallel(
+//                 Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel, vision).withTimeout(0.2),
+//                 Commands.runOnce(() -> indexer.startHopperIntake(), indexer),
+//                 Commands.waitSeconds(1.5)
+//             ),
+//             Commands.runOnce(() -> indexer.startShooterFeed(), indexer).repeatedly()
+//         );
+//     }
+// }

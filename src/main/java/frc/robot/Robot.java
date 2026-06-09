@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import edu.wpi.first.net.PortForwarder;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
@@ -51,6 +52,9 @@ public class Robot extends TimedRobot {
 
   @Override  public void robotInit() {
     System.out.println("Robot Initialized");
+
+    PortForwarder.add(5801, "limelight.local", 5801);
+    PortForwarder.add(5800, "limelight.local", 5800);
   }
 
 

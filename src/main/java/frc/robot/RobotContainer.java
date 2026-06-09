@@ -18,10 +18,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.RobotModeTriggers;
-import frc.robot.autos.EightPieceAutoFromCenter;
+// import frc.robot.autos.EightPieceAutoFromCenter;
 import frc.robot.autos.Nothing;
-import frc.robot.autos.SideAutoRelativeLeft;
-import frc.robot.autos.SideAutoRelativeRight;
+// import frc.robot.autos.SideAutoRelativeLeft;
+// import frc.robot.autos.SideAutoRelativeRight;
 import frc.robot.commands.Controls;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.CommandSwerveDrivetrain;
@@ -56,9 +56,9 @@ public class RobotContainer {
 
     private void configureAutos() {
         autoChooser.setDefaultOption("NOTHING", new Nothing());
-        autoChooser.addOption("8P-CENTER", new EightPieceAutoFromCenter(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
-        autoChooser.addOption("8P-LEFTREL", new SideAutoRelativeLeft(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
-        autoChooser.addOption("8P-RIGHTREL", new SideAutoRelativeRight(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
+        // autoChooser.addOption("8P-CENTER", new EightPieceAutoFromCenter(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
+        // autoChooser.addOption("8P-LEFTREL", new SideAutoRelativeLeft(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
+        // autoChooser.addOption("8P-RIGHTREL", new SideAutoRelativeRight(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
         // autoChooser.addOption("OneMeterSquare", new OneMeterSquare(drivetrain, drive, brake, MaxSpeed, MaxAngularRate));
 
         autoDelaySelector.setDefaultOption("No delay", 0);
@@ -75,18 +75,22 @@ public class RobotContainer {
     private void configureBindings() {
         Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
 
-        joystick.rightTrigger(0.1).whileTrue(
-            Commands.parallel(
-                Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel),
+        // joystick.rightTrigger(0.1).whileTrue(
+        //     Commands.parallel(
+        //         Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel),
 
-                Commands.run(() -> {
-                    if (fuel.isAtSetpoint(80)) indexer.startShooterFeed();
-                    else indexer.startHopperIntake(); 
-                }, indexer)
-            ).finallyDo(() -> {
-                indexer.stop();
-                fuel.stop();
-            })
+        //         Commands.run(() -> {
+        //             if (fuel.isAtSetpoint(80)) indexer.startShooterFeed();
+        //             else indexer.startHopperIntake();
+        //         }, indexer)
+        //     ).finallyDo(() -> {
+        //         indexer.stop();
+        //         fuel.stop();
+        //     })
+        // );
+
+        joystick.rightTrigger(0.1).whileTrue(
+            drivetrain.applyRequest(() -> drive.withRotationalRate(vision.calculateOmegaError() * (MaxAngularRate / 4)))
         );
 
         joystick.y().onTrue(
