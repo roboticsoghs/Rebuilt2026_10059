@@ -42,9 +42,9 @@ public class RobotContainer {
     public final CommandXboxController joystick = new CommandXboxController(0);
 
     public final CommandSwerveDrivetrain drivetrain = TunerConstants.createDrivetrain();
-    // public final IndexerSubsystem indexer = new IndexerSubsystem();
-    // public final FuelSubsystem fuel = new FuelSubsystem();
-    // public final Vision vision = new Vision(drivetrain);
+    public final IndexerSubsystem indexer = new IndexerSubsystem();
+    public final FuelSubsystem fuel = new FuelSubsystem();
+    public final Vision vision = new Vision(drivetrain);
 
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
     private final SendableChooser<Integer> autoDelaySelector = new SendableChooser<>();
@@ -56,9 +56,9 @@ public class RobotContainer {
 
     private void configureAutos() {
         autoChooser.setDefaultOption("NOTHING", new Nothing());
-        // autoChooser.addOption("8P-CENTER", new EightPieceAutoFromCenter(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
-        // autoChooser.addOption("8P-LEFTREL", new SideAutoRelativeLeft(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
-        // autoChooser.addOption("8P-RIGHTREL", new SideAutoRelativeRight(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
+        autoChooser.addOption("8P-CENTER", new EightPieceAutoFromCenter(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
+        autoChooser.addOption("8P-LEFTREL", new SideAutoRelativeLeft(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
+        autoChooser.addOption("8P-RIGHTREL", new SideAutoRelativeRight(drivetrain, drive, brake, vision, fuel, indexer, MaxSpeed, MaxAngularRate));
         // autoChooser.addOption("OneMeterSquare", new OneMeterSquare(drivetrain, drive, brake, MaxSpeed, MaxAngularRate));
 
         autoDelaySelector.setDefaultOption("No delay", 0);
@@ -73,72 +73,72 @@ public class RobotContainer {
     }
 
     private void configureBindings() {
-        // Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
+        Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
 
-        // joystick.rightTrigger(0.1).whileTrue(
-        //     Commands.parallel(
-        //         Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel),
+        joystick.rightTrigger(0.1).whileTrue(
+            Commands.parallel(
+                Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel),
 
-        //         Commands.run(() -> {
-        //             if (fuel.isAtSetpoint(80)) indexer.startShooterFeed();
-        //             else indexer.startHopperIntake(); 
-        //         }, indexer)
-        //     ).finallyDo(() -> {
-        //         indexer.stop();
-        //         fuel.stop();
-        //     })
-        // );
+                Commands.run(() -> {
+                    if (fuel.isAtSetpoint(80)) indexer.startShooterFeed();
+                    else indexer.startHopperIntake(); 
+                }, indexer)
+            ).finallyDo(() -> {
+                indexer.stop();
+                fuel.stop();
+            })
+        );
 
-        // joystick.y().onTrue(
-        //     Commands.runOnce(() -> {
-        //         indexer.stop();
-        //         fuel.stop();
-        //     }, indexer, fuel)
-        // );
+        joystick.y().onTrue(
+            Commands.runOnce(() -> {
+                indexer.stop();
+                fuel.stop();
+            }, indexer, fuel)
+        );
 
-        // joystick.leftBumper().onTrue(
-        //     Commands.runOnce(() -> {
-        //         indexer.startGroundOuttake();
-        //         fuel.startGroundOuttake();
-        //     }, indexer, fuel)
-        // );
+        joystick.leftBumper().onTrue(
+            Commands.runOnce(() -> {
+                indexer.startGroundOuttake();
+                fuel.startGroundOuttake();
+            }, indexer, fuel)
+        );
 
-        // joystick.leftTrigger(0.1).whileTrue(
-        //     Commands.runOnce(() -> {
-        //         indexer.startHopperIntake();
-        //         fuel.startHopperIntake();
-        //     }, indexer, fuel)
-        // );
+        joystick.leftTrigger(0.1).whileTrue(
+            Commands.runOnce(() -> {
+                indexer.startHopperIntake();
+                fuel.startHopperIntake();
+            }, indexer, fuel)
+        );
 
-        // joystick.leftTrigger().whileFalse(
-        //     Commands.runOnce(() -> {
-        //         indexer.stop();
-        //         fuel.stop();
-        //     }, indexer, fuel)
-        // );
+        joystick.leftTrigger().whileFalse(
+            Commands.runOnce(() -> {
+                indexer.stop();
+                fuel.stop();
+            }, indexer, fuel)
+        );
 
         // reset the field-centric heading
         joystick.a().onTrue(drivetrain.runOnce(() -> drivetrain.seedFieldCentric()));
 
-        // Command defaultCommand = Commands.parallel(
-        //     joystickCommand
-        // );
-        Command defaultCommand = drivetrain.applyRequest(() -> {
-                double vx = logScale(-joystick.getLeftY(), Constants.DRIVE_DEADBAND, Constants.kDrive);
-                double vy = logScale(-joystick.getLeftX(), Constants.DRIVE_DEADBAND, Constants.kDrive);
-                double omega = logScale(-joystick.getRightX(), Constants.ROT_DEADBAND, Constants.kRot);
+        Command defaultCommand = Commands.parallel(
+            joystickCommand
+        );
+        // Command defaultCommand = drivetrain.applyRequest(() -> {
+        //         double vx = logScale(-joystick.getLeftY(), Constants.DRIVE_DEADBAND, Constants.kDrive);
+        //         double vy = logScale(-joystick.getLeftX(), Constants.DRIVE_DEADBAND, Constants.kDrive);
+        //         double omega = logScale(-joystick.getRightX(), Constants.ROT_DEADBAND, Constants.kRot);
 
-                SmartDashboard.putNumber("VelocityX Setpoint", vx*MaxSpeed);
-                SmartDashboard.putNumber("VelocityY Setpoint", vy*MaxSpeed);
-                SmartDashboard.putNumber("Angular Setpoint", omega*MaxAngularRate);
+        //         SmartDashboard.putNumber("VelocityX Setpoint", vx*MaxSpeed);
+        //         SmartDashboard.putNumber("VelocityY Setpoint", vy*MaxSpeed);
+        //         SmartDashboard.putNumber("Angular Setpoint", omega*MaxAngularRate);
 
-                // if (joystick.b().getAsBoolean()) omega = vision.calculateOmegaError();
+        //         // if (joystick.b().getAsBoolean()) omega = vision.calculateOmegaError();
 
-                return drive
-                    .withVelocityX(vx * MaxSpeed)
-                    .withVelocityY(vy * MaxSpeed)
-                    .withRotationalRate(omega * MaxAngularRate);
-            });
+        //         return drive
+        //             .withVelocityX(vx * MaxSpeed)
+        //             .withVelocityY(vy * MaxSpeed)
+        //             .withRotationalRate(omega * MaxAngularRate);
+        //     });
         drivetrain.setDefaultCommand(defaultCommand);
 
         // Idle while the robot is disabled. This ensures the configured

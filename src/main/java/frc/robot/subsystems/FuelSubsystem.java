@@ -90,6 +90,7 @@ public class FuelSubsystem extends SubsystemBase {
         config1.closedLoop.feedForward.kS(kS, ClosedLoopSlot.kSlot1).kV(kV, ClosedLoopSlot.kSlot1).kA(kA, ClosedLoopSlot.kSlot1);
 
         // motor 2 config
+        config2.closedLoop.feedbackSensor(FeedbackSensor.kPrimaryEncoder);
         config2.voltageCompensation(12);
         config2.smartCurrentLimit(60);
         config2.idleMode(IdleMode.kCoast);
