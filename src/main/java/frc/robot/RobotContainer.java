@@ -90,7 +90,7 @@ public class RobotContainer {
         // );
 
         joystick.rightTrigger(0.1).whileTrue(
-            drivetrain.applyRequest(() -> drive.withRotationalRate(vision.calculateOmegaError() * (MaxAngularRate / 4)))
+            drivetrain.applyRequest(() -> drive.withRotationalRate(vision.calculateYawError() * MaxAngularRate))
         );
 
         joystick.y().onTrue(
