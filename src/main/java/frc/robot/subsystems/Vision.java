@@ -160,6 +160,7 @@ public class Vision extends SubsystemBase {
         return Math.abs(error) < 0.075;
     }
 
+    // TODO: remove
     public void adjustDistance(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxSpeed, double target) {
         if (!isAprilTag()) return;
         double distOffset = getZ();
@@ -173,6 +174,28 @@ public class Vision extends SubsystemBase {
         );
     }
 
+    public double calculateDistanceError(double targetMeters) {
+        if (!isAprilTag()) return 0;
+
+        final double kP = 1.0;
+        double error = targetMeters - getZ();
+
+        if (Math.abs(error) < 0.05) return 0;
+
+        return kP * error;
+    }
+
+    public double calculateHorizontalError() {
+        if (!isAprilTag()) return 0;
+
+        final double kP = 1.5;
+        double error = -getX();
+
+        if (Math.abs(error) < 0.04) return 0;
+
+        return kP * error;
+    }
+    
     public boolean isAnyAllianceHubFront() {
         return getId() == 10 || getId() == 26;
     }
