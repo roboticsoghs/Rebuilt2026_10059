@@ -77,7 +77,7 @@ public class Vision extends SubsystemBase {
 
     // get values relative to april tag
     public boolean isAprilTag(){
-        return x != 0 && y != 0;
+        return table.getEntry("tv").getDouble(0) == 1;
     }
     
     public double getX() {
@@ -102,16 +102,19 @@ public class Vision extends SubsystemBase {
         return aprilTagId;
     }
 
-    public double calculateYawError(double yaw) {
+    public double calculateYawError() {
         if (!isAprilTag()) return 0;
 
-        final double kP = 0.6;
-        double error = 0 - yaw;
-        error = error * kP;
+        final double kP = 0.06;
+        double error = -getYaw(); // same as subtracting from zero
+        
+        // deadband
+        if (Math.abs(error) < 1.0) return 0;
 
-        return error;
+        return kP * error;
     }
 
+    // TODO: remove
     public double calculateAprilTagError(double x, double z) {
         if (!isAprilTag()) return 0;
 
@@ -129,6 +132,7 @@ public class Vision extends SubsystemBase {
         return error;
     }
 
+    // TODO: remove
     public double calculateOmegaError() {
         if (!isAprilTag()) return 0;
 
@@ -139,6 +143,7 @@ public class Vision extends SubsystemBase {
         return error;
     }
 
+    // TODO: use new method
     public void faceAprilTag(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxAngularRate) {
         if (!isAprilTag()) return;
         double error = calculateAprilTagError(getX(), getZ());
@@ -148,6 +153,7 @@ public class Vision extends SubsystemBase {
         );
     }
 
+    // TODO: use new method
     public boolean isFacingAprilTag() {
         double error = calculateAprilTagError(getX(), getZ());
 
