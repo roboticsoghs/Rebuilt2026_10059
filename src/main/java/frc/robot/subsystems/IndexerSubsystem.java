@@ -26,8 +26,8 @@ public class IndexerSubsystem extends SubsystemBase{
     private final double SmartVelocityI = 0;
     private final double SmartVelocityD = 0.2;
 
-    private final double maxAccel = 2700;
-    private final int maxVel = 4000;
+    private final double maxAccel = 4000;
+    private final int maxVel = 5000;
     public final double allowedError = 0.05;
 
     double encoderValue;

@@ -72,9 +72,12 @@ public class RobotContainer {
         SmartDashboard.putData("AUTO SELECTOR", autoChooser);
         SmartDashboard.putData("AUTO DELAY", autoDelaySelector);
 
-        shooterSpeed.addOption("SINGLE", 0.5);
-        shooterSpeed.addOption("DOUBLE", 0.53);
-        shooterSpeed.addOption("MULTI", 0.56);
+        shooterSpeed.addOption("50%", 0.50);
+        shooterSpeed.addOption("51%", 0.51);
+        shooterSpeed.addOption("52%", 0.52);
+        shooterSpeed.addOption("53%", 0.53);
+        shooterSpeed.addOption("54%", 0.54);
+        shooterSpeed.addOption("56%", 0.56);
         shooterSpeed.addOption("65%", 0.65);
         shooterSpeed.addOption("70%", 0.70);
         shooterSpeed.addOption("SAFE_MAX", 0.8);
@@ -86,31 +89,38 @@ public class RobotContainer {
     private void configureBindings() {
         Command joystickCommand = new Controls(drivetrain, drive, brake, vision, fuel, indexer, joystick, MaxSpeed, MaxAngularRate);
 
-        // joystick.rightTrigger(0.1).whileTrue(
-        //     Commands.parallel(
-        //         Commands.run(() -> fuel.runUp(fuel.calcSpeedByDistance(vision.getZ())), fuel),
+        joystick.rightTrigger(0.1).whileTrue(
+            Commands.parallel(
+                Commands.run(() -> fuel.runUp(shooterSpeed.getSelected().doubleValue()), fuel),
 
-        //         Commands.run(() -> {
-        //             if (fuel.isAtSetpoint(80)) indexer.startShooterFeed();
-        //             else indexer.startHopperIntake();
-        //         }, indexer)
-        //     ).finallyDo(() -> {
-        //         indexer.stop();
-        //         fuel.stop();
-        //     })
-        // );
+                Commands.run(() -> {
+                    if (fuel.isAtSetpoint(100)) indexer.startShooterFeed();
+                    else indexer.startHopperIntake();
+                }, indexer)
+            ).finallyDo(() -> {
+                indexer.stop();
+                fuel.stop();
+            })
+        );
 
         joystick.leftTrigger(0.1).whileTrue(
             drivetrain.applyRequest(() -> {
-                double omega = vision.calculateYawError() * MaxAngularRate;
-                double x = vision.calculateDistanceError(0.45) * MaxSpeed;
-                double y = vision.calculateHorizontalError() * MaxSpeed;
+                if (vision.getId() != 7)
+                    return drive
+                        .withVelocityX(0)
+                        .withVelocityY(0)
+                        .withRotationalRate(0);
+
+                double omega = vision.calculateYawError() * (MaxAngularRate / 2);
+                double x = vision.calculateDistanceError(0.4) * (MaxSpeed / 3);
+                double y = vision.calculateHorizontalError() * (MaxSpeed / 2);
 
                 return drive
                     .withVelocityX(x)
                     .withVelocityY(y)
                     .withRotationalRate(omega);
             })
+            // .onlyWhile(() -> vision.getId() == 7)
         );
 
         joystick.y().onTrue(
@@ -139,21 +149,6 @@ public class RobotContainer {
                 indexer.stop();
                 fuel.stop();
             }, indexer, fuel)
-        );
-
-        joystick.rightTrigger(0.1).whileTrue(
-            // shoot
-            Commands.parallel(
-                Commands.run(() -> fuel.runUp(shooterSpeed.getSelected().doubleValue()), fuel),
-                Commands.run(() -> {
-                    if (fuel.isAtSetpoint(100)) {
-                        indexer.startShooterFeed();
-                    }
-                })
-            ).finallyDo(() -> {
-                indexer.stop();
-                fuel.stop();
-            })
         );
 
         joystick.rightTrigger().whileFalse(

@@ -65,7 +65,7 @@ public class Vision extends SubsystemBase {
         // SmartDashboard.putNumber("Distance to Hub", isAnyAllianceHubFront() ? getZ() : isAnyAllianceHubAnySide() ? getZ() : 0);
         SmartDashboard.putNumber("Distance to Hub", getZ()); // debug
         SmartDashboard.putNumber("Omega Error", calculateYawError());
-        SmartDashboard.putNumber("dist error", calculateDistanceError(1.0));
+        SmartDashboard.putNumber("dist error", calculateDistanceError(0.4));
         SmartDashboard.putNumber("side error", calculateHorizontalError());
 
         // double[] pose = table.getEntry("botpose_orb").getDoubleArray(new double[0]);
@@ -107,11 +107,11 @@ public class Vision extends SubsystemBase {
     public double calculateYawError() {
         if (!isAprilTag()) return 0;
 
-        final double kP = 0.06;
-        double error = getYaw(); // same as subtracting from zero
+        final double kP = 0.18;
+        double error = getYaw();
         
         // deadband
-        if (Math.abs(error) < 3.0) return 0;
+        if (Math.abs(error) < 0.70) return 0;
 
         return kP * error;
     }
@@ -119,10 +119,10 @@ public class Vision extends SubsystemBase {
     public double calculateDistanceError(double targetMeters) {
         if (!isAprilTag()) return 0;
 
-        final double kP = 1.0;
+        final double kP = 5.1;
         double error = targetMeters - getZ();
 
-        if (Math.abs(error) < 0.02) return 0;
+        if (Math.abs(error) < 0.012) return 0;
 
         return kP * error;
     }
@@ -130,10 +130,10 @@ public class Vision extends SubsystemBase {
     public double calculateHorizontalError() {
         if (!isAprilTag()) return 0;
 
-        final double kP = 1.3;
-        double error = getX();
+        final double kP = 4.4;
+        double error = getX() - 0.035;
 
-        if (Math.abs(error) < 0.03) return 0;
+        if (Math.abs(error) < 0.015) return 0;
 
         return kP * error;
     }

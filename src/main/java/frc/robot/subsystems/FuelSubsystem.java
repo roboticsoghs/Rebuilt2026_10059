@@ -35,7 +35,7 @@ public class FuelSubsystem extends SubsystemBase {
 
     // Settings                                                                                                                      a
     private final double maxAccel = 5000;
-    private final int maxVel = 5300;
+    private final int maxVel = 5400;
     public final double allowedError = 0.05;
 
     private final double SmartVelocityP = 0.0003;
