@@ -48,6 +48,7 @@ public class RobotContainer {
 
     private final SendableChooser<Command> autoChooser = new SendableChooser<>();
     private final SendableChooser<Integer> autoDelaySelector = new SendableChooser<>();
+    private final SendableChooser<Double>  shooterSpeed = new SendableChooser<>();
 
     public RobotContainer() {
         configureBindings();
@@ -70,6 +71,16 @@ public class RobotContainer {
 
         SmartDashboard.putData("AUTO SELECTOR", autoChooser);
         SmartDashboard.putData("AUTO DELAY", autoDelaySelector);
+
+        shooterSpeed.addOption("SINGLE", 0.5);
+        shooterSpeed.addOption("DOUBLE", 0.53);
+        shooterSpeed.addOption("MULTI", 0.56);
+        shooterSpeed.addOption("65%", 0.65);
+        shooterSpeed.addOption("70%", 0.70);
+        shooterSpeed.addOption("SAFE_MAX", 0.8);
+        shooterSpeed.addOption("UNSAFE_MAX", 1.0);
+
+        SmartDashboard.putData("SHOOTER SPEED", shooterSpeed);
     }
 
     private void configureBindings() {
@@ -89,10 +100,10 @@ public class RobotContainer {
         //     })
         // );
 
-        joystick.rightTrigger(0.1).whileTrue(
+        joystick.leftTrigger(0.1).whileTrue(
             drivetrain.applyRequest(() -> {
                 double omega = vision.calculateYawError() * MaxAngularRate;
-                double x = vision.calculateDistanceError(1.0) * MaxSpeed;
+                double x = vision.calculateDistanceError(0.45) * MaxSpeed;
                 double y = vision.calculateHorizontalError() * MaxSpeed;
 
                 return drive
@@ -116,14 +127,36 @@ public class RobotContainer {
             }, indexer, fuel)
         );
 
-        joystick.leftTrigger(0.1).whileTrue(
+        joystick.rightBumper().onTrue(
             Commands.runOnce(() -> {
                 indexer.startHopperIntake();
                 fuel.startHopperIntake();
             }, indexer, fuel)
         );
 
-        joystick.leftTrigger().whileFalse(
+        joystick.rightBumper().onFalse(
+            Commands.runOnce(() -> {
+                indexer.stop();
+                fuel.stop();
+            }, indexer, fuel)
+        );
+
+        joystick.rightTrigger(0.1).whileTrue(
+            // shoot
+            Commands.parallel(
+                Commands.run(() -> fuel.runUp(shooterSpeed.getSelected().doubleValue()), fuel),
+                Commands.run(() -> {
+                    if (fuel.isAtSetpoint(100)) {
+                        indexer.startShooterFeed();
+                    }
+                })
+            ).finallyDo(() -> {
+                indexer.stop();
+                fuel.stop();
+            })
+        );
+
+        joystick.rightTrigger().whileFalse(
             Commands.runOnce(() -> {
                 indexer.stop();
                 fuel.stop();

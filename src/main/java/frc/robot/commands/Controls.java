@@ -38,7 +38,7 @@ public class Controls extends ParallelCommandGroup{
                 SmartDashboard.putNumber("VelocityY Setpoint", vy*MaxSpeed);
                 SmartDashboard.putNumber("Angular Setpoint", omega*MaxAngRate);
 
-                if (joystick.b().getAsBoolean()) omega = vision.calculateOmegaError();
+                if (joystick.b().getAsBoolean()) omega = vision.calculateYawError();
 
                 return drive
                     .withVelocityX(vx * MaxSpeed)

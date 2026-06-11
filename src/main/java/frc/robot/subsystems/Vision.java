@@ -64,7 +64,9 @@ public class Vision extends SubsystemBase {
         SmartDashboard.putNumber("AprilTag ID", aprilTagId);
         // SmartDashboard.putNumber("Distance to Hub", isAnyAllianceHubFront() ? getZ() : isAnyAllianceHubAnySide() ? getZ() : 0);
         SmartDashboard.putNumber("Distance to Hub", getZ()); // debug
-        SmartDashboard.putNumber("Omega Error", calculateYawError(yaw));
+        SmartDashboard.putNumber("Omega Error", calculateYawError());
+        SmartDashboard.putNumber("dist error", calculateDistanceError(1.0));
+        SmartDashboard.putNumber("side error", calculateHorizontalError());
 
         // double[] pose = table.getEntry("botpose_orb").getDoubleArray(new double[0]);
         // if (pose.length > 0 && table.getEntry("tv").getDouble(0) > 0) {
@@ -106,72 +108,12 @@ public class Vision extends SubsystemBase {
         if (!isAprilTag()) return 0;
 
         final double kP = 0.06;
-        double error = -getYaw(); // same as subtracting from zero
+        double error = getYaw(); // same as subtracting from zero
         
         // deadband
-        if (Math.abs(error) < 1.0) return 0;
+        if (Math.abs(error) < 3.0) return 0;
 
         return kP * error;
-    }
-
-    // TODO: remove
-    public double calculateAprilTagError(double x, double z) {
-        if (!isAprilTag()) return 0;
-
-        final double kP = 0.6;
-
-        double xOffset = x - 0.05;
-        double zOffset = z;
-        double theta = Math.atan2(xOffset, zOffset);
-        theta = theta * Math.signum(theta);
-        double error = 0 - theta;
-        error = error * kP;
-
-        SmartDashboard.putNumber("angle error", error);
-
-        return error;
-    }
-
-    // TODO: remove
-    public double calculateOmegaError() {
-        if (!isAprilTag()) return 0;
-
-        double error = calculateAprilTagError(getX(), getZ());
-
-        if (Math.abs(error) < 0.7) return 0.0;
-
-        return error;
-    }
-
-    // TODO: use new method
-    public void faceAprilTag(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxAngularRate) {
-        if (!isAprilTag()) return;
-        double error = calculateAprilTagError(getX(), getZ());
-
-        drivetrain.setControl(
-            drive.withRotationalRate(error * MaxAngularRate)
-        );
-    }
-
-    // TODO: use new method
-    public boolean isFacingAprilTag() {
-        double error = calculateAprilTagError(getX(), getZ());
-
-        return Math.abs(error) < 0.075;
-    }
-
-    // TODO: remove
-    public void adjustDistance(CommandSwerveDrivetrain drivetrain, SwerveRequest.FieldCentric drive, SwerveRequest.SwerveDriveBrake brake, double MaxSpeed, double target) {
-        if (!isAprilTag()) return;
-        double distOffset = getZ();
-        double error = target - distOffset;
-        double distToMove = -(error * MaxSpeed);
-
-        SmartDashboard.putNumber("dist error", distToMove);
-
-        drivetrain.setControl(
-            drive.withVelocityX(distToMove)
-        );
     }
 
     public double calculateDistanceError(double targetMeters) {
@@ -180,7 +122,7 @@ public class Vision extends SubsystemBase {
         final double kP = 1.0;
         double error = targetMeters - getZ();
 
-        if (Math.abs(error) < 0.05) return 0;
+        if (Math.abs(error) < 0.02) return 0;
 
         return kP * error;
     }
@@ -188,10 +130,10 @@ public class Vision extends SubsystemBase {
     public double calculateHorizontalError() {
         if (!isAprilTag()) return 0;
 
-        final double kP = 1.5;
-        double error = -getX();
+        final double kP = 1.3;
+        double error = getX();
 
-        if (Math.abs(error) < 0.04) return 0;
+        if (Math.abs(error) < 0.03) return 0;
 
         return kP * error;
     }
