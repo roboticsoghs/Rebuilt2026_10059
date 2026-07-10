@@ -8,6 +8,10 @@ import com.ctre.phoenix6.swerve.SwerveModule.DriveRequestType;
 import com.ctre.phoenix6.swerve.SwerveRequest;
 
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.networktables.NetworkTable;
+import edu.wpi.first.networktables.NetworkTableEntry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+
 import static edu.wpi.first.units.Units.MetersPerSecond;
 import static edu.wpi.first.units.Units.RadiansPerSecond;
 import static edu.wpi.first.units.Units.RotationsPerSecond;
@@ -50,6 +54,13 @@ public class RobotContainer {
     private final SendableChooser<Integer> autoDelaySelector = new SendableChooser<>();
     private final SendableChooser<Double>  shooterSpeed = new SendableChooser<>();
 
+    // private NetworkTableInstance NT = NetworkTableInstance.getDefault();
+    // public NetworkTable telemetry = NT.getTable("telemetry");
+
+    // public NetworkTable fuelSubsystemTable = telemetry.getSubTable("fuelSubsystem");
+    // public NetworkTable indexerSubsystemTable = telemetry.getSubTable("indexerSubsystem");
+    // public NetworkTable visionSubsystemTable = telemetry.getSubTable("visionSubsystem");
+
     public RobotContainer() {
         configureBindings();
         configureAutos();
@@ -75,8 +86,10 @@ public class RobotContainer {
         shooterSpeed.addOption("50%", 0.50);
         shooterSpeed.addOption("51%", 0.51);
         shooterSpeed.addOption("52%", 0.52);
+        shooterSpeed.addOption("52.25%", 0.5225);
         shooterSpeed.addOption("53%", 0.53);
         shooterSpeed.addOption("54%", 0.54);
+        shooterSpeed.addOption("55%", 0.55);
         shooterSpeed.addOption("56%", 0.56);
         shooterSpeed.addOption("65%", 0.65);
         shooterSpeed.addOption("70%", 0.70);

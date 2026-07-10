@@ -14,6 +14,7 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.RobotContainer;
 
 public class FuelSubsystem extends SubsystemBase {
     private final double MAX_ALLOWED_SPEED = 0.8;
@@ -110,6 +111,8 @@ public class FuelSubsystem extends SubsystemBase {
         SmartDashboard.putNumber("Fuel Vel", encoder1.getVelocity());
         SmartDashboard.putNumber("Fuel2 Vel", encoder2.getVelocity());
         SmartDashboard.putNumber("fuel voltage", motor1.getAppliedOutput() * motor1.getBusVoltage());
+        
+        //fuelSetpointTableEntry = RobotContainer.fuelSubsystemTable.getEntry("Fuel Setpoint");
     }
 
     public void startHopperIntake() {
