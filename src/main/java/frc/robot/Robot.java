@@ -10,6 +10,7 @@ import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.util.Color;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.subsystems.NTelemetryDashboard;
@@ -54,6 +55,28 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("AimAssist Available", m_robotContainer.vision.isAprilTag() && (m_robotContainer.vision.isAnyAllianceHubFront() || m_robotContainer.vision.isAnyAllianceHubAnySide()));
   
     telemetry.putNumber("test_table", "bren", 15.2);
+    telemetry.putString("test_table", "string", "yummers");
+    telemetry.putBoolean("driverstatus_test", "status/m/h", true);
+
+    telemetry.putColor("test_table", "orange", 255, 127, 0);
+    // int totalSteps = 100;
+
+    //     for (int i = 0; i < totalSteps; i++) {
+    //         // 1. Generate WPILib Color from HSV (0-180 for Hue, 0-255 for S/V)
+    //         int hue = (i * 180) / totalSteps;
+    //         Color rainbowColor = Color.fromHSV(hue, 255, 255);
+
+    //         // 2. Scale double fractions (0.0 - 1.0) to 8-bit integers (0 - 255)
+    //         int r = (int) (rainbowColor.red * 255);
+    //         int g = (int) (rainbowColor.green * 255);
+    //         int b = (int) (rainbowColor.blue * 255);
+
+    //         // 3. Format as a 6-digit hex string with leading zeros
+    //         String hexCode = String.format("#%02X%02X%02X", r, g, b);
+
+    //         telemetry.putString("test_table", "Example Color", hexCode);
+    //         Timer.delay(0.05);
+    //      }
   }
 
   @Override  public void robotInit() {
