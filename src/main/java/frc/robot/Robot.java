@@ -12,6 +12,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.subsystems.NTelemetryDashboard;
 
 public class Robot extends TimedRobot {
   private Command m_autonomousCommand;
@@ -26,6 +27,8 @@ public class Robot extends TimedRobot {
   private double teleopStart;
 
   private final RobotContainer m_robotContainer;
+
+  private final NTelemetryDashboard telemetry = new NTelemetryDashboard();
 
   public Robot() {
     m_robotContainer = new RobotContainer();
@@ -49,6 +52,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putBoolean("Indexer Overheat Warn", m_robotContainer.indexer.motor.getMotorTemperature() >= 60);
     SmartDashboard.putBoolean("Shooter Ready", m_robotContainer.fuel.isAtSetpoint(100));
     SmartDashboard.putBoolean("AimAssist Available", m_robotContainer.vision.isAprilTag() && (m_robotContainer.vision.isAnyAllianceHubFront() || m_robotContainer.vision.isAnyAllianceHubAnySide()));
+  
+    telemetry.putNumber("test_table", "bren", 15.2);
   }
 
   @Override  public void robotInit() {
