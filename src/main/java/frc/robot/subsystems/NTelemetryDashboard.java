@@ -35,4 +35,15 @@ public class NTelemetryDashboard {
 
         telemetry.getSubTable(subtableName).getEntry(name).setValue(NetworkTableValue.makeString(color));
     };
+
+    // percent is from 0 - 1 as a percentage going from rgb1 - rgb2
+    public void putColorGradient(String subtableName, String name, int percent, int r1, int g1, int b1, int r2, int g2, int b2) {
+        int r = ((percent * 100 * r1) + ((1 - percent) * 100 * r2)) / 100;
+        int g = ((percent * 100 * g1) + ((1 - percent) * 100 * g2)) / 100;
+        int b = ((percent * 100 * b1) + ((1 - percent) * 100 * b2)) / 100;
+
+        String color = String.format("#%02X%02X%02X", r, g, b);
+
+        telemetry.getSubTable(subtableName).getEntry(name).setValue(NetworkTableValue.makeString(color));
+    };
 };
